@@ -33,6 +33,8 @@ using namespace ci;
 class World {
 public:
 	World();
+	World(const World& w) = delete;
+	World& operator=(const World& rhs) = delete;
 	~World();
 	
 	void init();
@@ -85,10 +87,10 @@ protected:
 	int cxMin = 0, cyMin = 0, cxMax = -1, cyMax = -1;
 	std::forward_list<Chunk*> visibleChunks;
 	
-	std::map<chunkCoords, Chunk> chunks;
-	void addChunk(Chunk chunk) {
+	std::map<chunkCoords, Chunk*> chunks;
+	void addChunk(Chunk* chunk) {
 		std::lock_guard<std::mutex> lock(chunkLoader.chunksMutex);
-		/*return */chunks.insert(std::pair<chunkCoords, Chunk>({chunk.cx,chunk.cy}, chunk))/*.first->second*/;
+		/*return */chunks.insert(std::pair<chunkCoords, Chunk*>({chunk.cx,chunk.cy}, chunk))/*.first->second*/;
 	}
 	
 	class ChunkLoader chunkLoader;
