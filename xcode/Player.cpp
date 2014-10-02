@@ -16,7 +16,7 @@ bool Player::update(float dt) {
 	if (appInstance->jumpDown) {
 		if (onGround)
 			sy = -250;
-		for (int n = 0; n < 50; n++)
+		for (int n = 0; n < 60; n++)
 			world->spawnParticle(int(x), int(y));
 	}
 	
