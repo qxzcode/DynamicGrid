@@ -1,4 +1,3 @@
-Pixel Engine
-============
+## Pixel Engine
 
-Working on description...
+Pixel Engine is a game engine in C++ for high-res, infinite, dynamic tiled worlds.
