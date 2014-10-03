@@ -8,7 +8,8 @@
 
 #include "Entity.h"
 
-#include "PixelWorldApp.h"
+#include "World.h"
+#include "util.h"
 #include "TileTypes.h"
 
 bool Entity::update(float dt) {
@@ -26,6 +27,11 @@ bool Entity::update(float dt) {
 	
 	return false;
 }
+
+// temporary #includes
+#include "worldFormat.h"
+#include "cinder/gl/gl.h"
+using namespace ci;
 
 void Entity::draw() {
 	glDisable(GL_TEXTURE_2D);
@@ -95,7 +101,7 @@ bool Entity::isColliding(double x, double y, int* cx, int* cy) {
 		int wx = mx+lx;
 		for (int ly = 0; ly < curSprite->h; ly++) {
 			int wy = my+ly;
-			if (TILE_SOLID[appInstance->world.getTile(wx, wy)] && curSprite->solid(lx, ly)) {
+			if (TILE_SOLID[world->getTile(wx, wy)] && curSprite->solid(lx, ly)) {
 				if (cx) *cx = lx;
 				if (cy) *cy = ly;
 				return true;
