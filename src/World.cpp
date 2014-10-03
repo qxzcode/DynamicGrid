@@ -8,6 +8,7 @@
 
 #include "World.h"
 
+#include "Chunk.h"
 #include "game_shaders.h"
 
 World::World():noise(time(NULL)),chunkLoader(this) {
@@ -15,7 +16,10 @@ World::World():noise(time(NULL)),chunkLoader(this) {
 }
 
 World::~World() {
-	
+	for (auto it = chunks.begin(); it != chunks.end(); it++) {
+		auto e = *it;
+		delete e.second;
+	}
 }
 
 
@@ -154,15 +158,20 @@ void World::spawnEntity(Entity *e) {
 	entities.emplace_front(e);
 }
 
+void World::addChunk(Chunk* chunk) {
+	std::lock_guard<std::mutex> lock(chunkLoader.chunksMutex);
+	/*return */chunks.insert(std::pair<chunkCoords, Chunk*>({chunk->cx,chunk->cy}, chunk))/*.first->second*/;
+}
+
 Chunk& World::loadChunk(int cx, int cy) {
 	chunkCoords cc = {cx, cy};
 	try {
 		std::lock_guard<std::mutex> lock(chunkLoader.chunksMutex);
-		return chunks.at(cc);
+		return *chunks.at(cc);
 	} catch (std::out_of_range ex) {
 		chunkLoader.loadChunk(cc);
 		std::lock_guard<std::mutex> lock(chunkLoader.chunksMutex);
-		return chunks.at(cc);
+		return *chunks.at(cc);
 	}
 }
 

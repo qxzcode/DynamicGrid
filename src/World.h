@@ -18,21 +18,22 @@
 #include "cinder/gl/GlslProg.h"
 using namespace ci;
 
+#include "worldFormat.h"
 #include "chunkCoords.h"
-#include "Chunk.h"
 #include "ChunkLoader.h"
 #include "SimplexNoise.h"
 #include "Entity.h"
 #include "Player.h"
 #include "util.h"
 
-#define PIXEL_SIZE 4							 // size of a tile on screen
-#define CHUNK_PIXEL_SIZE (PIXEL_SIZE*CHUNK_SIZE) // size of a chunk on screen
 
+class Chunk;
 
 class World {
 public:
 	World();
+	World(const World& w) = delete;
+	World& operator=(const World& rhs) = delete;
 	~World();
 	
 	void init();
@@ -85,11 +86,8 @@ protected:
 	int cxMin = 0, cyMin = 0, cxMax = -1, cyMax = -1;
 	std::forward_list<Chunk*> visibleChunks;
 	
-	std::map<chunkCoords, Chunk> chunks;
-	void addChunk(Chunk chunk) {
-		std::lock_guard<std::mutex> lock(chunkLoader.chunksMutex);
-		/*return */chunks.insert(std::pair<chunkCoords, Chunk>({chunk.cx,chunk.cy}, chunk))/*.first->second*/;
-	}
+	std::map<chunkCoords, Chunk*> chunks;
+	void addChunk(Chunk* chunk);
 	
 	class ChunkLoader chunkLoader;
 	friend class ChunkLoader;

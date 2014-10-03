@@ -13,8 +13,7 @@
 #include "cinder/gl/Texture.h"
 using namespace ci;
 
-typedef unsigned char tileID;
-#define CHUNK_SIZE 256	// width/height of a chunk in tiles
+#include "worldFormat.h"
 
 class Chunk {
 public:

@@ -8,6 +8,8 @@
 
 #include "ChunkLoader.h"
 
+#include "Chunk.h"
+
 void ChunkLoader::worker() {
 	while (true) {
 		// get the next request from the queue
@@ -24,8 +26,8 @@ void ChunkLoader::worker() {
 		}
 		
 		// load the chunk and add it to the world's loaded chunk list
-		Chunk chunk(cc.x, cc.y);
-		chunk.generate(world);
+		Chunk* chunk = new Chunk(cc.x, cc.y);
+		chunk->generate(world);
 		world->addChunk(chunk);
 		
 		// notify threads waiting for a chunk to load
