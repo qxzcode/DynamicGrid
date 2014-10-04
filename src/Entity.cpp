@@ -30,6 +30,7 @@ bool Entity::update(float dt) {
 
 // temporary #includes
 #include "worldFormat.h"
+#include "OpenGL.h"
 #include "cinder/gl/gl.h"
 using namespace ci;
 

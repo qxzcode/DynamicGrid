@@ -12,9 +12,6 @@
 #include <vector>
 #include <forward_list>
 
-#include "cinder/gl/gl.h"
-#include "cinder/gl/Vbo.h"
-#include "cinder/gl/Texture.h"
 #include "cinder/gl/GlslProg.h"
 using namespace ci;
 

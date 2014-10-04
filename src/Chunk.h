@@ -8,8 +8,7 @@
 
 #pragma once
 
-#include "cinder/gl/gl.h"
-#include "cinder/gl/DisplayList.h"
+#include "OpenGL.h"
 #include "cinder/gl/Texture.h"
 using namespace ci;
 
