@@ -9,6 +9,7 @@
 #include "SimplexNoise.h"
 
 #include <stdlib.h>
+#include <math.h>
 
 #include "util.h"
 
