@@ -8,6 +8,8 @@
 
 #include "PixelWorldApp.h"
 
+#include "input.h"
+
 PixelWorldApp* appInstance;
 
 void PixelWorldApp::prepareSettings(Settings* settings) {

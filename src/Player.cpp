@@ -8,12 +8,13 @@
 
 #include "Player.h"
 
-#include "PixelWorldApp.h"
+#include "input.h"
+#include "World.h"
 
 bool Player::update(float dt) {
-	if (appInstance->leftDown)  sx -= 200*dt;
-	if (appInstance->rightDown) sx += 200*dt;
-	if (appInstance->jumpDown) {
+	if (leftDown)  sx -= 200*dt;
+	if (rightDown) sx += 200*dt;
+	if (jumpDown) {
 		if (onGround)
 			sy = -250;
 		for (int n = 0; n < 50; n++)

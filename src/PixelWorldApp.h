@@ -37,8 +37,6 @@ public:
 	
 	World world;
 	
-	bool leftDown = false, rightDown = false, jumpDown = false;
-	
 protected:
 	float getDelta() {
 		double curTime = getElapsedSeconds();
