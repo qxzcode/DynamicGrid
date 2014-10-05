@@ -10,6 +10,8 @@
 
 #include "Chunk.h"
 
+using namespace engine;
+
 void ChunkLoader::worker() {
 	while (true) {
 		// get the next request from the queue

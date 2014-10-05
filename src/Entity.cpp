@@ -12,6 +12,8 @@
 #include "util.h"
 #include "TileTypes.h"
 
+using namespace engine;
+
 bool Entity::update(float dt) {
 	// handle physics stuff
 	if (hasGravity)

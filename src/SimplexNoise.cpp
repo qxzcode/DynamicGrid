@@ -13,6 +13,8 @@
 
 #include "util.h"
 
+using namespace engine::util;
+
 SimplexNoise::SimplexNoise(unsigned long seed):randGrid(seed) {
 	
 }

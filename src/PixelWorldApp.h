@@ -34,7 +34,7 @@ public:
 	void update();
 	void draw();
 	
-	World world;
+	engine::World world;
 	
 protected:
 	float getDelta() {

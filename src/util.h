@@ -8,7 +8,7 @@
 
 #pragma once
 
-namespace util {
+namespace engine { namespace util {
 	inline int floor(double x) {
 		return x>0? int(x) : int(x)-1;
 	}
@@ -21,4 +21,4 @@ namespace util {
 	inline int ceil(float x) {
 		return x>0? int(x)+1 : int(x);
 	}
-}
+} }

@@ -11,6 +11,8 @@
 #include "World.h"
 #include "TileTypes.h"
 
+using namespace engine;
+
 Chunk::Chunk(int cx, int cy):cx(cx),cy(cy),cwx(cx*CHUNK_SIZE),cwy(cy*CHUNK_SIZE) {
 	
 }

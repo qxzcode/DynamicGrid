@@ -11,6 +11,8 @@
 #include "Chunk.h"
 #include "game_shaders.h"
 
+using namespace engine;
+
 World::World():noise(time(NULL)),chunkLoader(this) {
 	
 }

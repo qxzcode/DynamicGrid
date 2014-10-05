@@ -10,10 +10,10 @@
 
 #include "Entity.h"
 
-class Player : public Entity {
+class Player : public engine::Entity {
 public:
 	static Sprite sprite;
-	Player(World* w, double x, double y):Entity(w, &Player::sprite, x, y) {}
+	Player(engine::World* w, double x, double y):Entity(w, &Player::sprite, x, y) {}
 	
 	bool update(float dt);
 };
