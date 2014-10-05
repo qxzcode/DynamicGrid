@@ -63,7 +63,8 @@ void Chunk::generate(World *world) {
 	for (int x = -P; x < CHUNK_SIZE+P; x++) {
 		for (int y = -P; y < CHUNK_SIZE+P; y++) {
 			double noise = world->noise.baseTerrain.getNoise((cwx+x)/scale, (cwy+y)/scale);
-			noiseGrid[x+P][y+P] = noise>0.0;
+			noise = fabs(noise)*2.0 - 1.0; // ridged multifractal transform
+			noiseGrid[x+P][y+P] = noise>-0.5;
 		}
 	}
 	
