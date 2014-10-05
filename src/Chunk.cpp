@@ -8,16 +8,12 @@
 
 #include "Chunk.h"
 
-#include <vector>
-
-#include "World.h" // defines CHUNK_PIXEL_SIZE
+#include "World.h"
 #include "TileTypes.h"
 
 Chunk::Chunk(int cx, int cy):cx(cx),cy(cy),cwx(cx*CHUNK_SIZE),cwy(cy*CHUNK_SIZE) {
 	
 }
-
-#include "cinder/gl/Texture.h"
 
 void Chunk::init() {
 	// initialize tileTex (will be populated with data in Chunk::draw())
