@@ -21,13 +21,6 @@ Chunk::Chunk(int cx, int cy):cx(cx),cy(cy),cwx(cx*CHUNK_SIZE),cwy(cy*CHUNK_SIZE)
 
 void Chunk::init() {
 	// initialize tileTex (will be populated with data in Chunk::draw())
-//	gl::Texture::Format fmt;
-//	fmt.setInternalFormat(GL_RGB);
-//	fmt.setWrap(GL_REPEAT, GL_REPEAT);
-//	fmt.setMinFilter(GL_NEAREST);
-//	fmt.setMagFilter(GL_NEAREST);
-//	tileTex = gl::Texture(CHUNK_SIZE, CHUNK_SIZE, fmt);
-	
 	glGenTextures(1, &tileTex);
 	glBindTexture(GL_TEXTURE_2D, tileTex);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -61,14 +54,6 @@ Chunk::~Chunk() {
 }
 
 void Chunk::generate(World *world) {
-//	// fill with randomness
-//	srandom(time(NULL)+cx+cy*9001);
-//	for (int x = 0; x < CHUNK_SIZE; x++) {
-//		for (int y = 0; y < CHUNK_SIZE; y++) {
-//			tiles[x][y] = random()%2? 0 : 1;
-//		}
-//	}
-	
 	// fill with simplex noise!
 	
 	// generate noise
@@ -135,7 +120,6 @@ void Chunk::draw(World *world) {
 			}
 		}
 		glTexSubImage2D(GL_TEXTURE_2D, 0, dirtyYMin, dirtyXMin, height, width, GL_RGB, GL_UNSIGNED_BYTE, data);
-//		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, CHUNK_SIZE, CHUNK_SIZE, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
 		
 		dirty = false;
 	}
