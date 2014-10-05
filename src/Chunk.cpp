@@ -47,6 +47,8 @@ void Chunk::init() {
 Chunk::~Chunk() {
 	if (displayList)
 		glDeleteLists(displayList, 1);
+	if (tileTex)
+		glDeleteTextures(1, &tileTex);
 }
 
 void Chunk::generate(World *world) {

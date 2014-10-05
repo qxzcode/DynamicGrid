@@ -35,6 +35,6 @@ protected:
 	bool dirty = true;
 	int dirtyXMin = 0, dirtyXMax = CHUNK_SIZE-1, dirtyYMin = 0, dirtyYMax = CHUNK_SIZE-1;
 	
-	GLuint tileTex;
+	GLuint tileTex = 0;
 	GLuint displayList = 0;
 };
