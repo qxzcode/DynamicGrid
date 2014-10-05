@@ -54,7 +54,7 @@ void ChunkLoader::requestLoadChunk(chunkCoords cc) {
 	std::lock_guard<std::mutex> lock(requestsMutex);
 	for (chunkCoords& cc2 : requests)
 		if (cc == cc2) return;
-	requests.push_front(cc);
+	requests.push_back(cc);
 	hasRequest.notify_all();
 }
 
