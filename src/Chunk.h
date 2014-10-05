@@ -9,8 +9,6 @@
 #pragma once
 
 #include "OpenGL.h"
-#include "cinder/gl/Texture.h"
-using namespace ci;
 
 #include "worldFormat.h"
 
@@ -37,6 +35,6 @@ protected:
 	bool dirty = true;
 	int dirtyXMin = 0, dirtyXMax = CHUNK_SIZE-1, dirtyYMin = 0, dirtyYMax = CHUNK_SIZE-1;
 	
-	gl::Texture tileTex;
+	GLuint tileTex;
 	GLuint displayList = 0;
 };

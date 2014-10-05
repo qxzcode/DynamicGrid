@@ -17,14 +17,24 @@ Chunk::Chunk(int cx, int cy):cx(cx),cy(cy),cwx(cx*CHUNK_SIZE),cwy(cy*CHUNK_SIZE)
 	
 }
 
+#include "cinder/gl/Texture.h"
+
 void Chunk::init() {
 	// initialize tileTex (will be populated with data in Chunk::draw())
-	gl::Texture::Format fmt;
-	fmt.setInternalFormat(GL_RGB);
-	fmt.setWrap(GL_REPEAT, GL_REPEAT);
-	fmt.setMinFilter(GL_NEAREST);
-	fmt.setMagFilter(GL_NEAREST);
-	tileTex = gl::Texture(CHUNK_SIZE, CHUNK_SIZE, fmt);
+//	gl::Texture::Format fmt;
+//	fmt.setInternalFormat(GL_RGB);
+//	fmt.setWrap(GL_REPEAT, GL_REPEAT);
+//	fmt.setMinFilter(GL_NEAREST);
+//	fmt.setMagFilter(GL_NEAREST);
+//	tileTex = gl::Texture(CHUNK_SIZE, CHUNK_SIZE, fmt);
+	
+	glGenTextures(1, &tileTex);
+	glBindTexture(GL_TEXTURE_2D, tileTex);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, CHUNK_SIZE, CHUNK_SIZE, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	
 	// initialize mesh and buffer data
 	displayList = glGenLists(1);
@@ -106,7 +116,7 @@ void Chunk::draw(World *world) {
 		initialized = true;
 	}
 	
-	tileTex.bind();
+	glBindTexture(GL_TEXTURE_2D, tileTex);
 	if (dirty) {
 		// update the dirty part of the texture
 		int width = dirtyXMax-dirtyXMin+1, height = dirtyYMax-dirtyYMin+1;
