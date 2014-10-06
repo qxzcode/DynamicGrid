@@ -63,11 +63,14 @@ void Chunk::generate(World *world) {
 	// generate noise
 	static const double scale = 128.0;
 #define P 8
+	double noiseVals[CHUNK_SIZE][CHUNK_SIZE];
 	bool noiseGrid[CHUNK_SIZE+P*2][CHUNK_SIZE+P*2];
 	for (int x = -P; x < CHUNK_SIZE+P; x++) {
 		for (int y = -P; y < CHUNK_SIZE+P; y++) {
 			double noise = world->noise.baseTerrain.getNoise((cwx+x)/scale, (cwy+y)/scale);
 			noise = fabs(noise)*2.0 - 1.0; // ridged multifractal transform
+			if (x>=0&&x<CHUNK_SIZE&&y>=0&&y<CHUNK_SIZE)
+				noiseVals[x][y] = noise;
 			noiseGrid[x+P][y+P] = noise>-0.5;
 		}
 	}
@@ -75,6 +78,14 @@ void Chunk::generate(World *world) {
 	// fill tiles
 	for (int x = 0; x < CHUNK_SIZE; x++) {
 		for (int y = 0; y < CHUNK_SIZE; y++) {
+			// background
+			if (noiseVals[x][y]<-0.6) {
+				layers[0][x][y] = SKY;
+			} else {
+				layers[0][x][y] = DIRTBG;
+			}
+			
+			// foreground
 			if (!noiseGrid[x+P][y+P]) {
 				layers[1][x][y] = EMPTY;
 			} else {
