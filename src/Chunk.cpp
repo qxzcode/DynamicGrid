@@ -63,8 +63,8 @@ void Chunk::generate(World *world) {
 	// generate noise
 	static const double scale = 128.0;
 #define P 8
-	double noiseVals[CHUNK_SIZE][CHUNK_SIZE];
 	bool noiseGrid[CHUNK_SIZE+P*2][CHUNK_SIZE+P*2];
+	float noiseVals[CHUNK_SIZE][CHUNK_SIZE];
 	for (int x = -P; x < CHUNK_SIZE+P; x++) {
 		for (int y = -P; y < CHUNK_SIZE+P; y++) {
 			double noise = world->noise.baseTerrain.getNoise((cwx+x)/scale, (cwy+y)/scale);
@@ -79,7 +79,7 @@ void Chunk::generate(World *world) {
 	for (int x = 0; x < CHUNK_SIZE; x++) {
 		for (int y = 0; y < CHUNK_SIZE; y++) {
 			// background
-			if (noiseVals[x][y]<-0.6) {
+			if (noiseVals[x][y]<-0.4) {
 				layers[0][x][y] = SKY;
 			} else {
 				layers[0][x][y] = DIRTBG;
