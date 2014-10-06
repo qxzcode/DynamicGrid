@@ -6,9 +6,20 @@
 //
 //
 
-#ifndef __PixelEngine__TileType__
-#define __PixelEngine__TileType__
+#pragma once
 
-#include <iostream>
+#include "Color.h"
 
-#endif /* defined(__PixelEngine__TileType__) */
+namespace engine {
+	
+	class TileType {
+	public:
+		TileType(bool s, Color c1);
+		TileType(bool s, Color c1, Color c2, int cc);
+		
+		bool solid;
+		Color color1, color2;
+		int colorChance;
+	};
+	
+}
