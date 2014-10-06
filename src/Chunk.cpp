@@ -8,6 +8,9 @@
 
 #include "Chunk.h"
 
+#include <cmath>
+#include <cstdlib>
+
 #include "World.h"
 #include "TileTypes.h"
 

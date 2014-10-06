@@ -25,11 +25,26 @@ World::~World() {
 }
 
 
+static void loadShader(GLuint prog, GLenum shaderType, const char* src) {
+	GLuint handle = glCreateShader(shaderType);
+	glShaderSource(handle, 1, reinterpret_cast<const GLchar**>(&src), NULL);
+	glCompileShader(handle);
+	
+	GLint status;
+	glGetShaderiv(handle, GL_COMPILE_STATUS, &status);
+	if(status != GL_TRUE) {
+		printf("Error compiling shader\n");
+		return;
+	}
+	glAttachShader(prog, handle);
+}
+
 void World::init() {
 	chunkLoader.startWorker();
 	spawnEntity(player = new Player(this, 0, 0));
-	gameShader = gl::GlslProg(game_vert_src, game_frag_src);
-	gameShader.bind();
+	loadShader(gameShader, GL_VERTEX_SHADER, game_vert_src);
+	loadShader(gameShader, GL_FRAGMENT_SHADER, game_frag_src);
+	glLinkProgram(gameShader);
 }
 
 void World::update(float dt) {
@@ -76,7 +91,7 @@ void World::draw(int winWidth, int winHeight) {
 	glPushMatrix();
 	winWidth /= 2; winHeight /= 2;
 	int camX = this->camX(), camY = this->camY();
-	gl::translate(winWidth-camX*PIXEL_SIZE, winHeight-camY*PIXEL_SIZE);
+	glTranslatef(winWidth-camX*PIXEL_SIZE, winHeight-camY*PIXEL_SIZE, 0);
 	
 	// calculate the visible range of chunks
 	int w = winWidth /CHUNK_PIXEL_SIZE + 1;
@@ -90,6 +105,7 @@ void World::draw(int winWidth, int winHeight) {
 	// draw the chunks
 	glEnable(GL_TEXTURE_2D);
 	glColor3f(1, 1, 1);
+	glUseProgram(gameShader);
 	if (cxMin!=this->cxMin||cyMin!=this->cyMin||cxMax!=this->cxMax||cyMax!=this->cyMax) {
 		// if visible chunk range has changed, update the list
 		visibleChunks.clear();
@@ -149,6 +165,7 @@ void World::setTile(int x, int y, tileID tile) {
 }
 
 #include "Acid.h"
+#include <stdlib.h>
 
 void World::spawnParticle(int x, int y) {
 #define rand ((random()/2147483647.0*2.0)-1.0)

@@ -11,9 +11,7 @@
 #include <map>
 #include <vector>
 #include <forward_list>
-
-#include "cinder/gl/GlslProg.h"
-using namespace ci;
+#include "OpenGL.h"
 
 #include "worldFormat.h"
 #include "chunkCoords.h"
@@ -99,7 +97,7 @@ namespace engine {
 		};
 		std::forward_list<EntityRef> entities;
 		
-		gl::GlslProg gameShader;
+		GLuint gameShader;
 	};
 	
 }
