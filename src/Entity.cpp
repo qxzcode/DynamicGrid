@@ -38,7 +38,7 @@ using namespace ci;
 
 void Entity::draw() {
 	glDisable(GL_TEXTURE_2D);
-	gl::color(Color(1, 0, 0));
+	gl::color(cinder::Color(1, 0, 0));
 	float x = util::floor(this->x)*PIXEL_SIZE, y = util::floor(this->y)*PIXEL_SIZE;
 	gl::drawSolidRect(Rectf(x, y, x+PIXEL_SIZE, y+PIXEL_SIZE));
 }

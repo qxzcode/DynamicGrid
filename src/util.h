@@ -9,16 +9,20 @@
 #pragma once
 
 namespace engine { namespace util {
-	inline int floor(double x) {
+	int floor(double x) {
 		return x>0? int(x) : int(x)-1;
 	}
-	inline int ceil(double x) {
+	int ceil(double x) {
 		return x>0? int(x)+1 : int(x);
 	}
-	inline int floor(float x) {
+	int floor(float x) {
 		return x>0? int(x) : int(x)-1;
 	}
-	inline int ceil(float x) {
+	int ceil(float x) {
 		return x>0? int(x)+1 : int(x);
+	}
+	template <typename T>
+	T clampMax(T x, T max) {
+		return x>max? max : x;
 	}
 } }

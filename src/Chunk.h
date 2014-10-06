@@ -22,14 +22,20 @@ namespace engine {
 		void generate(class World *world);
 		void draw(World *world);
 		
-		tileID getTile(int x, int y) { return tiles[x][y]; }
-		void setTile(int x, int y, tileID tile);
+		tileID getTile(int l, int x, int y) { return layers[l][x][y]; }
+		void setTile(int l, int x, int y, tileID tile);
 		
 		friend class World;
 		
 	protected:
 		const int cx, cy, cwx, cwy;
-		tileID tiles[CHUNK_SIZE][CHUNK_SIZE];
+		struct Layer {
+			tileID tiles[CHUNK_SIZE][CHUNK_SIZE];
+			tileID* operator[](int x) {
+				return tiles[x];
+			}
+		};
+		Layer layers[NUM_LAYERS];
 		
 		void init();
 		bool initialized = false;

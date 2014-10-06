@@ -154,13 +154,13 @@ void World::draw(int winWidth, int winHeight) {
 tileID World::getTile(int x, int y) {
 	int cx = getChunkCoord(x), cy = getChunkCoord(y);
 	if (!chunkLoaded(cx, cy)) return 0;
-	else return loadChunk(cx, cy).getTile(getLocalCoord(x), getLocalCoord(y));
+	else return loadChunk(cx, cy).getTile(1, getLocalCoord(x), getLocalCoord(y));
 }
 
 void World::setTile(int x, int y, tileID tile) {
 	int cx = getChunkCoord(x), cy = getChunkCoord(y);
 	if (chunkLoaded(cx, cy)) {
-		loadChunk(cx, cy).setTile(getLocalCoord(x), getLocalCoord(y), tile);
+		loadChunk(cx, cy).setTile(1, getLocalCoord(x), getLocalCoord(y), tile);
 	}
 }
 

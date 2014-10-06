@@ -12,6 +12,7 @@
 #include <cstdlib>
 
 #include "World.h"
+#include "Color.h"
 #include "TileTypes.h"
 
 using namespace engine;
@@ -28,7 +29,7 @@ void Chunk::init() {
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 	glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
 	glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, CHUNK_SIZE, CHUNK_SIZE, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, CHUNK_SIZE, CHUNK_SIZE, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
 	
 	// initialize mesh and buffer data
 	displayList = glGenLists(1);
@@ -75,7 +76,7 @@ void Chunk::generate(World *world) {
 	for (int x = 0; x < CHUNK_SIZE; x++) {
 		for (int y = 0; y < CHUNK_SIZE; y++) {
 			if (!noiseGrid[x+P][y+P]) {
-				tiles[x][y] = EMPTY;
+				layers[1][x][y] = EMPTY;
 			} else {
 				int emptyDist = P;
 				for (int x2 = x; x2 <= x+P*2; x2++) {
@@ -90,9 +91,9 @@ void Chunk::generate(World *world) {
 					}
 				}
 				if (world->noise.grassFray.get(cwx+x, cwy+y)%(P/2) > emptyDist-(P/2)) {
-					tiles[x][y] = GRASS;
+					layers[1][x][y] = GRASS;
 				} else {
-					tiles[x][y] = world->noise.dirtRocks.get(cwx+x, cwy+y)%35? DIRT : STONE;
+					layers[1][x][y] = world->noise.dirtRocks.get(cwx+x, cwy+y)%35? DIRT : STONE;
 				}
 			}
 		}
@@ -109,21 +110,25 @@ void Chunk::draw(World *world) {
 	if (dirty) {
 		// update the dirty part of the texture
 		int width = dirtyXMax-dirtyXMin+1, height = dirtyYMax-dirtyYMin+1;
-		unsigned char data[width*height*3];
+		unsigned char data[width*height*4];
 		int i = 0;
 		for (int x = dirtyXMin; x <= dirtyXMax; x++) {
 			for (int y = dirtyYMin; y <= dirtyYMax; y++) {
-				tileID t = tiles[x][y];
-				const unsigned char* const color = TILE_COLORS
-														[t]
-														[world->noise.tileColors.get(cwx+x, cwy+y)%100 <
-															TILE_COLOR_RATES[t]];
-				data[i++] = color[0];
-				data[i++] = color[1];
-				data[i++] = color[2];
+				Color tileColor;
+				for (int l = 0; l < NUM_LAYERS; l++) {
+					tileID t = layers[l][x][y];
+					const Color color = TILE_COLORS
+											[t]
+											[world->noise.tileColors.get(cwx+x, cwy+y)%100 < TILE_COLOR_RATES[t]];
+					tileColor = Color::blend(tileColor, color);
+				}
+				data[i++] = tileColor.r;
+				data[i++] = tileColor.g;
+				data[i++] = tileColor.b;
+				data[i++] = tileColor.a;
 			}
 		}
-		glTexSubImage2D(GL_TEXTURE_2D, 0, dirtyYMin, dirtyXMin, height, width, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, dirtyYMin, dirtyXMin, height, width, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		
 		dirty = false;
 	}
@@ -132,9 +137,9 @@ void Chunk::draw(World *world) {
 	glCallList(displayList);
 }
 
-void Chunk::setTile(int x, int y, tileID tile) {
-	if (tiles[x][y] != tile) {
-		tiles[x][y] = tile;
+void Chunk::setTile(int l, int x, int y, tileID tile) {
+	if (layers[l][x][y] != tile) {
+		layers[l][x][y] = tile;
 		if (!dirty) {
 			dirtyXMin=dirtyXMax=x;
 			dirtyYMin=dirtyYMax=y;
