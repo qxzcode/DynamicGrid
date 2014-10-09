@@ -30,10 +30,11 @@ namespace engine {
 	protected:
 		const int cx, cy, cwx, cwy;
 		struct Layer {
-			tileID tiles[CHUNK_SIZE][CHUNK_SIZE];
 			tileID* operator[](int x) {
 				return tiles[x];
 			}
+			tileID tiles[CHUNK_SIZE][CHUNK_SIZE];
+			class LayerData* data = NULL;
 		};
 		Layer layers[NUM_LAYERS];
 		
