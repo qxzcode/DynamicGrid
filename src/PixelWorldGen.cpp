@@ -19,9 +19,9 @@ PixelWorldGen::PixelWorldGen(unsigned long seed):
 						grassFray(seed++),
 						dirtRocks(seed++) {}
 
-void PixelWorldGen::generateChunk(engine::World* world, engine::Chunk* chunk) {
+void PixelWorldGen::generateChunk(dgrid::World* world, dgrid::Chunk* chunk) {
 	// init layer data
-//	chunk->layers[2].data = new engine::EntityLayerData();
+//	chunk->layers[2].data = new dgrid::EntityLayerData();
 	
 	// fill with simplex noise!
 	

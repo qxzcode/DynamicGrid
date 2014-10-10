@@ -25,4 +25,4 @@ bool Player::update(float dt) {
 	return false;
 }
 
-engine::Entity::Sprite Player::sprite(1, 1);
+dgrid::Entity::Sprite Player::sprite(1, 1);

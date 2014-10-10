@@ -8,7 +8,7 @@
 
 #pragma once
 
-namespace engine {
+namespace dgrid {
 	
 	struct chunkCoords {
 		int x, y;

@@ -11,7 +11,7 @@
 #include "Chunk.h"
 #include "World.h"
 
-namespace engine {
+namespace dgrid {
 	
 	class WorldGenerator {
 	public:

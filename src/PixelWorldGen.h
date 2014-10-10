@@ -11,15 +11,15 @@
 #include "WorldGenerator.h"
 #include "SimplexNoise.h"
 
-class PixelWorldGen: public engine::WorldGenerator {
+class PixelWorldGen: public dgrid::WorldGenerator {
 public:
 	PixelWorldGen(unsigned long seed);
 	
-	virtual void generateChunk(engine::World* world, engine::Chunk* chunk);
+	virtual void generateChunk(dgrid::World* world, dgrid::Chunk* chunk);
 	
 protected:
 	// noise sources
-	engine::util::FractalNoise baseTerrain;
-	engine::util::RandomGrid grassFray, dirtRocks;
+	dgrid::util::FractalNoise baseTerrain;
+	dgrid::util::RandomGrid grassFray, dirtRocks;
 	
 };

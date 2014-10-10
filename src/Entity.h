@@ -10,7 +10,7 @@
 
 #include "worldFormat.h"
 
-namespace engine {
+namespace dgrid {
 	
 	class Entity {
 	public:

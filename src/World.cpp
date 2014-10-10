@@ -11,7 +11,7 @@
 #include "Chunk.h"
 #include "game_shaders.h"
 
-using namespace engine;
+using namespace dgrid;
 
 World::World(WorldGenerator* gen):generator(gen),noise(time(NULL)),chunkLoader(this) {
 	

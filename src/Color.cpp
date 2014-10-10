@@ -10,7 +10,7 @@
 
 #include "util.h"
 
-using namespace engine;
+using namespace dgrid;
 
 static inline ch_t mix(unsigned short a, unsigned short b, unsigned short x) {
 	return (a*(255-x) + b*x)/255;

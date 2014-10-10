@@ -8,7 +8,7 @@
 
 #include "LayerData.h"
 
-using namespace engine;
+using namespace dgrid;
 
 EntityLayerData::EntityLayerData() {
 	for (int x = 0; x < CHUNK_SIZE; x++) {

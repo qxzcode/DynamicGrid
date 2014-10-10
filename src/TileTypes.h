@@ -42,8 +42,8 @@
 
 
 /// the color(s) for each tile type
-static const engine::Color TILE_COLORS[][2] = {
-#define C engine::Color
+static const dgrid::Color TILE_COLORS[][2] = {
+#define C dgrid::Color
 	{EMPTY_COLOR},
 	{SKY_COLOR},
 	{DIRT_COLOR1,DIRT_COLOR2},

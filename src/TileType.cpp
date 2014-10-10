@@ -8,7 +8,7 @@
 
 #include "TileType.h"
 
-using namespace engine;
+using namespace dgrid;
 
 TileType::TileType(bool s, Color c1):solid(s),color1(c1),colorChance(0) {}
 

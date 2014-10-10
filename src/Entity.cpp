@@ -14,7 +14,7 @@
 #include "util.h"
 #include "TileTypes.h"
 
-using namespace engine;
+using namespace dgrid;
 
 bool Entity::update(float dt) {
 	// handle physics stuff
@@ -33,11 +33,6 @@ bool Entity::update(float dt) {
 }
 
 void Entity::draw() {
-//	glDisable(GL_TEXTURE_2D);
-//	gl::color(cinder::Color(1, 0, 0));
-//	float x = util::floor(this->x)*PIXEL_SIZE, y = util::floor(this->y)*PIXEL_SIZE;
-//	gl::drawSolidRect(Rectf(x, y, x+PIXEL_SIZE, y+PIXEL_SIZE));
-	
 	int x = util::floor(this->x), y = util::floor(this->y);
 	if (drawn) {
 		world->setTile(2, lastDrawX, lastDrawY, 0);

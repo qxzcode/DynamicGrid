@@ -13,7 +13,7 @@
 
 #include "chunkCoords.h"
 
-namespace engine {
+namespace dgrid {
 	
 	class ChunkLoader {
 	public:

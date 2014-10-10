@@ -13,7 +13,7 @@
 #include "LayerData.h"
 #include "TileTypes.h"
 
-using namespace engine;
+using namespace dgrid;
 
 Chunk::Chunk(int cx, int cy):cx(cx),cy(cy),cwx(cx*CHUNK_SIZE),cwy(cy*CHUNK_SIZE) {
 	

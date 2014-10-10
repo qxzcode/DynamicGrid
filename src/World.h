@@ -22,7 +22,7 @@
 #include "util.h"
 
 
-namespace engine {
+namespace dgrid {
 	
 	class Chunk;
 	

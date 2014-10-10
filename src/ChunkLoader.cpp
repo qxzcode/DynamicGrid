@@ -11,7 +11,7 @@
 #include "Chunk.h"
 #include "WorldGenerator.h"
 
-using namespace engine;
+using namespace dgrid;
 
 void ChunkLoader::worker() {
 	while (true) {

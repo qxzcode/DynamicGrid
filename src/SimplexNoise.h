@@ -10,7 +10,7 @@
 
 #define PERM_TABLE_LEN 600
 
-namespace engine { namespace util {
+namespace dgrid { namespace util {
 	
 	class RandomGrid {
 	public:

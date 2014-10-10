@@ -14,7 +14,7 @@
 bool Acid::update(float dt) {
 	Entity::update(dt);
 	if (collided) {
-		world->setTile(1, engine::util::floor(x), engine::util::floor(y), EMPTY);
+		world->setTile(1, dgrid::util::floor(x), dgrid::util::floor(y), EMPTY);
 //		world->setTile(util::floor(x+1), util::floor(y), EMPTY);
 //		world->setTile(util::floor(x-1), util::floor(y), EMPTY);
 //		world->setTile(util::floor(x), util::floor(y+1), EMPTY);
@@ -24,4 +24,4 @@ bool Acid::update(float dt) {
 	return false;
 }
 
-engine::Entity::Sprite Acid::sprite(1, 1);
+dgrid::Entity::Sprite Acid::sprite(1, 1);

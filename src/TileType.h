@@ -10,7 +10,7 @@
 
 #include "Color.h"
 
-namespace engine {
+namespace dgrid {
 	
 	class TileType {
 	public:

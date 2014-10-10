@@ -10,10 +10,10 @@
 
 #include "Entity.h"
 
-class Acid : public engine::Entity {
+class Acid : public dgrid::Entity {
 public:
 	static Sprite sprite;
-	Acid(engine::World* w, double x, double y, double sx, double sy):Entity(w, &Acid::sprite, x, y, sx, sy) {stopOnCollide=true;}
+	Acid(dgrid::World* w, double x, double y, double sx, double sy):Entity(w, &Acid::sprite, x, y, sx, sy) {stopOnCollide=true;}
 	
 	bool update(float dt);
 };

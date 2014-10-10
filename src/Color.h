@@ -8,7 +8,7 @@
 
 #pragma once
 
-namespace engine {
+namespace dgrid {
 	
 	typedef unsigned char ch_t;
 	

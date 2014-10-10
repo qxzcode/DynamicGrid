@@ -33,7 +33,7 @@ public:
 	void update();
 	void draw();
 	
-	engine::World world;
+	dgrid::World world;
 	PixelWorldGen generator;
 	
 protected:
