@@ -8,11 +8,9 @@
 
 #include "Chunk.h"
 
-#include <cmath>
-#include <cstdlib>
-
 #include "World.h"
 #include "Color.h"
+#include "LayerData.h"
 #include "TileTypes.h"
 
 using namespace engine;
@@ -57,60 +55,6 @@ Chunk::~Chunk() {
 		glDeleteTextures(1, &tileTex);
 }
 
-void Chunk::generate(World *world) {
-	// fill with simplex noise!
-	
-	// generate noise
-	static const double scale = 128.0;
-#define P 8
-	bool noiseGrid[CHUNK_SIZE+P*2][CHUNK_SIZE+P*2];
-	float noiseVals[CHUNK_SIZE][CHUNK_SIZE];
-	for (int x = -P; x < CHUNK_SIZE+P; x++) {
-		for (int y = -P; y < CHUNK_SIZE+P; y++) {
-			double noise = world->noise.baseTerrain.getNoise((cwx+x)/scale, (cwy+y)/scale);
-			noise = fabs(noise)*2.0 - 1.0; // ridged multifractal transform
-			if (x>=0&&x<CHUNK_SIZE&&y>=0&&y<CHUNK_SIZE)
-				noiseVals[x][y] = noise;
-			noiseGrid[x+P][y+P] = noise>-0.5;
-		}
-	}
-	
-	// fill tiles
-	for (int x = 0; x < CHUNK_SIZE; x++) {
-		for (int y = 0; y < CHUNK_SIZE; y++) {
-			// background
-			if (noiseVals[x][y]<-0.4) {
-				layers[0][x][y] = SKY;
-			} else {
-				layers[0][x][y] = DIRTBG;
-			}
-			
-			// foreground
-			if (!noiseGrid[x+P][y+P]) {
-				layers[1][x][y] = EMPTY;
-			} else {
-				int emptyDist = P;
-				for (int x2 = x; x2 <= x+P*2; x2++) {
-					int dx = abs(x2 - (x+P));
-					for (int y2 = y; y2 <= y+P*2; y2++) {
-						int dy = abs(y2 - (y+P));
-						if (!noiseGrid[x2][y2]) {
-							int d = dx>dy?dx:dy;
-							if (d < emptyDist)
-								emptyDist = d;
-						}
-					}
-				}
-				if (world->noise.grassFray.get(cwx+x, cwy+y)%(P/2) > emptyDist-(P/2)) {
-					layers[1][x][y] = GRASS;
-				} else {
-					layers[1][x][y] = world->noise.dirtRocks.get(cwx+x, cwy+y)%35? DIRT : STONE;
-				}
-			}
-		}
-	}
-}
-
 void Chunk::draw(World *world) {
 	if (!initialized) {
 		init();
@@ -149,8 +93,18 @@ void Chunk::draw(World *world) {
 }
 
 void Chunk::setTile(int l, int x, int y, tileID tile) {
-	if (layers[l][x][y] != tile) {
-		layers[l][x][y] = tile;
+	bool changed;
+	if (layers[l].data) {
+		changed = layers[l].data->setTile(layers[l].tiles, x, y, tile);
+	} else {
+		if (layers[l][x][y] != tile) {
+			layers[l][x][y] = tile;
+			changed = true;
+		} else changed = false;
+	}
+	
+	// if the tile was changed, update the dirty rect
+	if (changed) {
 		if (!dirty) {
 			dirtyXMin=dirtyXMax=x;
 			dirtyYMin=dirtyYMax=y;
@@ -162,6 +116,10 @@ void Chunk::setTile(int l, int x, int y, tileID tile) {
 		}
 		dirty = true;
 	}
+}
+
+Chunk::Layer::~Layer() {
+	delete data;
 }
 
 

@@ -10,7 +10,9 @@
 
 #include "input.h"
 
-PixelWorldApp* appInstance;
+PixelWorldApp::PixelWorldApp():generator(time(NULL)),world(&generator) {
+	
+}
 
 void PixelWorldApp::prepareSettings(Settings* settings) {
 	settings->setWindowSize(1000, 800);

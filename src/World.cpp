@@ -13,7 +13,7 @@
 
 using namespace engine;
 
-World::World():noise(time(NULL)),chunkLoader(this) {
+World::World(WorldGenerator* gen):generator(gen),noise(time(NULL)),chunkLoader(this) {
 	
 }
 
@@ -71,18 +71,22 @@ void World::update(float dt) {
 //			particles.erase(particles.begin()+(i--));
 //	}
 	
-	// update entities
+	// update/draw entities
 	std::forward_list<EntityRef>::iterator it = entities.begin(), lastIt;
 	while (it != entities.end()) {
 		if ((*it)->update(dt)) {
 			// update returned true; remove entity
+			(*it)->onRemove();
 			bool first = it==entities.begin();
 			it++;
 			if (first)
 				entities.pop_front();
 			else
 				entities.erase_after(lastIt);
-		} else lastIt = it++;
+		} else {
+			(*it)->draw();
+			lastIt = it++;
+		}
 	}
 }
 
@@ -101,6 +105,11 @@ void World::draw(int winWidth, int winHeight) {
 	int cxMax = camCX + w;
 	int cyMin =	camCY - h;
 	int cyMax = camCY + h;
+	
+//	// draw entities
+//	for (auto it = entities.begin(); it != entities.end(); it++) {
+//		(*it)->draw();
+//	}
 	
 	// draw the chunks
 	glEnable(GL_TEXTURE_2D);
@@ -131,11 +140,6 @@ void World::draw(int winWidth, int winHeight) {
 		}
 	}
 	
-	// draw entities
-	for (auto it = entities.begin(); it != entities.end(); it++) {
-		(*it)->draw();
-	}
-	
 	// draw particles
 //	w = winWidth /PIXEL_SIZE + 1;
 //	h = winHeight/PIXEL_SIZE + 1;
@@ -151,16 +155,16 @@ void World::draw(int winWidth, int winHeight) {
 }
 
 
-tileID World::getTile(int x, int y) {
+tileID World::getTile(int l, int x, int y) {
 	int cx = getChunkCoord(x), cy = getChunkCoord(y);
 	if (!chunkLoaded(cx, cy)) return 0;
-	else return loadChunk(cx, cy).getTile(1, getLocalCoord(x), getLocalCoord(y));
+	else return loadChunk(cx, cy).getTile(l, getLocalCoord(x), getLocalCoord(y));
 }
 
-void World::setTile(int x, int y, tileID tile) {
+void World::setTile(int l, int x, int y, tileID tile) {
 	int cx = getChunkCoord(x), cy = getChunkCoord(y);
 	if (chunkLoaded(cx, cy)) {
-		loadChunk(cx, cy).setTile(1, getLocalCoord(x), getLocalCoord(y), tile);
+		loadChunk(cx, cy).setTile(l, getLocalCoord(x), getLocalCoord(y), tile);
 	}
 }
 

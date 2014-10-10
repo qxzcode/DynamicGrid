@@ -19,17 +19,17 @@ namespace engine {
 		Chunk(int cx, int cy);
 		~Chunk();
 		
-		void generate(class World *world);
-		void draw(World *world);
+		void draw(class World *world);
 		
 		tileID getTile(int l, int x, int y) { return layers[l][x][y]; }
 		void setTile(int l, int x, int y, tileID tile);
 		
 		friend class World;
 		
-	protected:
+//	protected:
 		const int cx, cy, cwx, cwy;
 		struct Layer {
+			~Layer();
 			tileID* operator[](int x) {
 				return tiles[x];
 			}
@@ -38,6 +38,7 @@ namespace engine {
 		};
 		Layer layers[NUM_LAYERS];
 		
+	protected:
 		void init();
 		bool initialized = false;
 		

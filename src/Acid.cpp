@@ -14,7 +14,7 @@
 bool Acid::update(float dt) {
 	Entity::update(dt);
 	if (collided) {
-		world->setTile(engine::util::floor(x), engine::util::floor(y), EMPTY);
+		world->setTile(1, engine::util::floor(x), engine::util::floor(y), EMPTY);
 //		world->setTile(util::floor(x+1), util::floor(y), EMPTY);
 //		world->setTile(util::floor(x-1), util::floor(y), EMPTY);
 //		world->setTile(util::floor(x), util::floor(y+1), EMPTY);

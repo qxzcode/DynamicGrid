@@ -9,6 +9,7 @@
 #include "ChunkLoader.h"
 
 #include "Chunk.h"
+#include "WorldGenerator.h"
 
 using namespace engine;
 
@@ -29,7 +30,7 @@ void ChunkLoader::worker() {
 		
 		// load the chunk and add it to the world's loaded chunk list
 		Chunk* chunk = new Chunk(cc.x, cc.y);
-		chunk->generate(world);
+		world->generator->generateChunk(world, chunk);
 		world->addChunk(chunk);
 		
 		// notify threads waiting for a chunk to load

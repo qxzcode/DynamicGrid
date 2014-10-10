@@ -8,6 +8,8 @@
 
 #include "Entity.h"
 
+#include <math.h>
+
 #include "World.h"
 #include "util.h"
 #include "TileTypes.h"
@@ -30,17 +32,26 @@ bool Entity::update(float dt) {
 	return false;
 }
 
-// temporary #includes
-#include "worldFormat.h"
-#include "OpenGL.h"
-#include "cinder/gl/gl.h"
-using namespace ci;
-
 void Entity::draw() {
-	glDisable(GL_TEXTURE_2D);
-	gl::color(cinder::Color(1, 0, 0));
-	float x = util::floor(this->x)*PIXEL_SIZE, y = util::floor(this->y)*PIXEL_SIZE;
-	gl::drawSolidRect(Rectf(x, y, x+PIXEL_SIZE, y+PIXEL_SIZE));
+//	glDisable(GL_TEXTURE_2D);
+//	gl::color(cinder::Color(1, 0, 0));
+//	float x = util::floor(this->x)*PIXEL_SIZE, y = util::floor(this->y)*PIXEL_SIZE;
+//	gl::drawSolidRect(Rectf(x, y, x+PIXEL_SIZE, y+PIXEL_SIZE));
+	
+	int x = util::floor(this->x), y = util::floor(this->y);
+	if (drawn) {
+		world->setTile(2, lastDrawX, lastDrawY, 0);
+	}
+	world->setTile(2, x, y, curSprite->tile(0, 0));
+	lastDrawX = x;
+	lastDrawY = y;
+	drawn = true;
+}
+
+void Entity::onRemove() {
+	if (drawn) {
+		world->setTile(2, lastDrawX, lastDrawY, 0);
+	}
 }
 
 void Entity::doCollide() {
@@ -104,7 +115,7 @@ bool Entity::isColliding(double x, double y, int* cx, int* cy) {
 		int wx = mx+lx;
 		for (int ly = 0; ly < curSprite->h; ly++) {
 			int wy = my+ly;
-			if (TILE_SOLID[world->getTile(wx, wy)] && curSprite->solid(lx, ly)) {
+			if (TILE_SOLID[world->getTile(1, wx, wy)] && curSprite->solid(lx, ly)) {
 				if (cx) *cx = lx;
 				if (cy) *cy = ly;
 				return true;
@@ -113,3 +124,28 @@ bool Entity::isColliding(double x, double y, int* cx, int* cy) {
 	}
 	return false;
 }
+
+
+#define SPRITE_INIT(W,H) w(W),h(H),solidData(new bool[W*H]),tileData(new tileID[W*H])
+Entity::Sprite::Sprite(int w, int h):SPRITE_INIT(w,h) {
+	for (int i = 0; i < w*h; i++) {
+		solidData[i] = true;
+		tileData[i] = 4;
+	}
+}
+Entity::Sprite::Sprite(const Sprite& s):SPRITE_INIT(s.w,s.h) {
+	for (int i = 0; i < w*h; i++) {
+		solidData[i] = s.solidData[i];
+		tileData[i] = s.tileData[i];
+	}
+}
+#undef SPRITE_INIT
+Entity::Sprite::~Sprite() {
+	delete [] solidData;
+	delete [] tileData;
+}
+
+
+
+
+

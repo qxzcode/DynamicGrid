@@ -18,7 +18,7 @@ EntityLayerData::EntityLayerData() {
 	}
 }
 
-inline bool EntityLayerData::setTile(tileID** tiles, int x, int y, tileID newTile) {
+inline bool EntityLayerData::setTile(tileID tiles[CHUNK_SIZE][CHUNK_SIZE], int x, int y, tileID newTile) {
 	if (newTile!=0 || --counts[x][y]==0) {
 		tiles[x][y] = newTile;
 		return true;

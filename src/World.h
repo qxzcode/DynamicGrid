@@ -28,7 +28,7 @@ namespace engine {
 	
 	class World {
 	public:
-		World();
+		World(class WorldGenerator* gen);
 		World(const World& w) = delete;
 		World& operator=(const World& rhs) = delete;
 		~World();
@@ -37,8 +37,8 @@ namespace engine {
 		void update(float dt);
 		void draw(int winWidth, int winHeight);
 		
-		tileID getTile(int x, int y);
-		void setTile(int x, int y, tileID tile);
+		tileID getTile(int l, int x, int y);
+		void setTile(int l, int x, int y, tileID tile);
 		
 		void spawnParticle(int x, int y);
 		void spawnEntity(Entity* e);
@@ -51,11 +51,7 @@ namespace engine {
 		// noise for generation and rendering
 	protected:
 		struct NoiseContainer {
-			NoiseContainer(unsigned long seed):baseTerrain(seed++, 5, 0.35),grassFray(seed++),dirtRocks(seed++),tileColors(seed++) {}
-			
-			// generation
-			util::FractalNoise baseTerrain;
-			util::RandomGrid grassFray, dirtRocks;
+			NoiseContainer(unsigned long seed):tileColors(seed++) {}
 			
 			// rendering
 			util::RandomGrid tileColors;
@@ -87,7 +83,10 @@ namespace engine {
 		void addChunk(Chunk* chunk);
 		
 		class ChunkLoader chunkLoader;
-		friend class ChunkLoader;
+		friend ChunkLoader;
+		
+		WorldGenerator* generator;
+		friend WorldGenerator;
 		
 		struct EntityRef {
 			Entity* ptr;

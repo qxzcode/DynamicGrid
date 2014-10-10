@@ -11,16 +11,15 @@
 #include "cinder/app/AppNative.h"
 
 #include "World.h"
+#include "PixelWorldGen.h"
 
 using namespace ci;
 using namespace ci::app;
 using namespace std;
 
-extern class PixelWorldApp* appInstance;
-
 class PixelWorldApp : public AppNative {
 public:
-	PixelWorldApp() {appInstance = this;}
+	PixelWorldApp();
 	
 	void prepareSettings(Settings* settings);
 	void setup();
@@ -35,6 +34,7 @@ public:
 	void draw();
 	
 	engine::World world;
+	PixelWorldGen generator;
 	
 protected:
 	float getDelta() {

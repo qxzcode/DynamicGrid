@@ -8,6 +8,8 @@
 
 #pragma once
 
+#include "worldFormat.h"
+
 namespace engine {
 	
 	class Entity {
@@ -19,29 +21,25 @@ namespace engine {
 		virtual bool update(float dt);
 		void draw();
 		
+		virtual void onRemove();
+		
 		double x, y, sx, sy;
 		
 		struct Sprite {
-			Sprite(int w, int h):w(w),h(h),solidData(new bool[w*h]) {
-				for (int i = 0; i < w*h; i++) {
-					solidData[i] = true;
-				}
-			}
-			Sprite(const Sprite& s):w(s.w),h(s.h),solidData(new bool[s.w*s.h]) {
-				for (int i = 0; i < w*h; i++) {
-					solidData[i] = s.solidData[i];
-				}
-			}
-			~Sprite() {
-				delete [] solidData;
-			}
+			Sprite(int w, int h);
+			Sprite(const Sprite& s);
+			~Sprite();
 			
 			bool& solid(int x, int y) {
 				return solidData[x+y*w];
 			}
+			tileID& tile(int x, int y) {
+				return tileData[x+y*w];
+			}
 			
 			const int w, h;
 			bool* const solidData;
+			tileID* const tileData;
 		};
 		
 	protected:
@@ -52,6 +50,8 @@ namespace engine {
 		bool stopOnCollide = false, hasGravity = true;
 		
 		double lastX, lastY;
+		int lastDrawX, lastDrawY;
+		bool drawn = false;
 		Sprite* curSprite;
 		
 		World* world;

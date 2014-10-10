@@ -8,20 +8,21 @@
 
 #pragma once
 
-#include "Chunk.h"
+#include "worldFormat.h"
 
 namespace engine {
 	
 	class LayerData {
 	public:
-		virtual bool setTile(tileID** tiles, int x, int y, tileID newTile) = 0;
+		virtual ~LayerData() {}
+		virtual bool setTile(tileID tiles[CHUNK_SIZE][CHUNK_SIZE], int x, int y, tileID newTile) = 0;
 	};
 	
-	class EntityLayerData {
+	class EntityLayerData: public LayerData {
 	public:
 		EntityLayerData();
 		
-		virtual bool setTile(tileID** tiles, int x, int y, tileID newTile);
+		virtual bool setTile(tileID tiles[CHUNK_SIZE][CHUNK_SIZE], int x, int y, tileID newTile);
 		
 		unsigned char counts[CHUNK_SIZE][CHUNK_SIZE];
 	};
