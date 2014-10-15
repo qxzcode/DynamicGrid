@@ -40,6 +40,10 @@
 #define DIRTBG_COLOR_RATE 17
 #define DIRTBG_SOLID false
 
+#define ACID 6
+#define ACID_COLOR C(255, 0, 0)
+#define ACID_SOLID false
+
 
 /// the color(s) for each tile type
 static const dgrid::Color TILE_COLORS[][2] = {
@@ -50,6 +54,7 @@ static const dgrid::Color TILE_COLORS[][2] = {
 	{GRASS_COLOR1,GRASS_COLOR2},
 	{STONE_COLOR1,STONE_COLOR2},
 	{DIRTBG_COLOR1,DIRTBG_COLOR2},
+	{ACID_COLOR},
 #undef C
 };
 /// the chance (out of 100) to pick the secondary color
@@ -60,6 +65,7 @@ static const int TILE_COLOR_RATES[] = {
 	GRASS_COLOR_RATE,
 	STONE_COLOR_RATE,
 	DIRTBG_COLOR_RATE,
+	0,
 };
 static const bool TILE_SOLID[] = {
 	false,
@@ -68,4 +74,5 @@ static const bool TILE_SOLID[] = {
 	GRASS_SOLID,
 	STONE_SOLID,
 	DIRTBG_SOLID,
+	ACID_SOLID,
 };

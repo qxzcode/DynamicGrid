@@ -125,7 +125,7 @@ bool Entity::isColliding(double x, double y, int* cx, int* cy) {
 Entity::Sprite::Sprite(int w, int h):SPRITE_INIT(w,h) {
 	for (int i = 0; i < w*h; i++) {
 		solidData[i] = true;
-		tileData[i] = 4;
+		tileData[i] = ACID;
 	}
 }
 Entity::Sprite::Sprite(const Sprite& s):SPRITE_INIT(s.w,s.h) {
