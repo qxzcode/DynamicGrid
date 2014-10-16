@@ -27,9 +27,10 @@ namespace dgrid { namespace util {
 		void pushBit(bool bit);
 		
 		uint32_t low, high;
+		int scales;
 		std::vector<byte> bytes;
-		byte curByte, curBits;
+		int curI, curBits;
 		
 	};
-
+	
 } }
