@@ -154,6 +154,11 @@ void Chunk::compress(unsigned char* &data, unsigned int &len) {
 		util::SymbolSet symbols;
 		for (int i = 0; i < 10; i++) {
 			symbols.addSymbol(counts[i]);
+			if (counts[i] > 0) {
+				encoder.encode(i, 256);
+				encoder.encode(counts[i], CHUNK_SIZE*CHUNK_SIZE+1);
+				printf("Count of %i: %i\n", i, counts[i]);
+			}
 		}
 		
 		// encode runs
@@ -165,8 +170,8 @@ void Chunk::compress(unsigned char* &data, unsigned int &len) {
 	encoder.finish();
 	
 	unsigned long before = (NUM_LAYERS-1)*CHUNK_SIZE*CHUNK_SIZE*sizeof(tileID), after = encoder.len();
-	printf("Bytes before compression: %lu (%lukb)\n", before, before/1024);
-	printf("Bytes after compression: %lu (%lukb)\n", after, after/1024);
+	printf("Bytes before compression: %lu (%.1fkb)\n", before, before/1024.0f);
+	printf("Bytes after compression: %lu (%.1fkb)\n", after, after/1024.0f);
 	printf("Compression ratio: %f%%\n\n\n", 100*float(after)/float(before));
 	
 	return;
