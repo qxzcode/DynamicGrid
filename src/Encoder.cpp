@@ -56,6 +56,10 @@ void Encoder::encode(SymbolSet& set, unsigned sym) {
 	encode(set.low_counts[sym], set.high_counts[sym], set.total);
 }
 
+void Encoder::encode(uint32_t num, uint32_t max) {
+	encode(num, num+1, max);
+}
+
 void Encoder::pushBit(bool bit) {
 	byte& curByte = bytes[curI];
 	curByte = (curByte*2) + bit;
