@@ -8,15 +8,13 @@
 
 #include "Encoder.h"
 
+#include "arithmetic_globals.h"
+
 using namespace dgrid::util;
 
 Encoder::Encoder():low(0),high(0x7FFFFFFF),scales(0),curI(0),curBits(0) {
 	bytes.push_back(0);
 }
-
-static const uint32_t QUART1 = 0x20000000;
-static const uint32_t HALF   = 0x40000000;
-static const uint32_t QUART3 = 0x60000000;
 
 void Encoder::encode(uint32_t low_count, uint32_t high_count, uint32_t total) {
 	// compute step
@@ -30,17 +28,17 @@ void Encoder::encode(uint32_t low_count, uint32_t high_count, uint32_t total) {
 	bool e1;
 	while ((e1 = high<HALF) || (low>=HALF)) {
 		if (e1) {	// E1 scaling (interval in lower half)
-			pushBit(0);
 			low  = low*2;
 			high = high*2 + 1;
 			
+			pushBit(0);
 			for (; scales>0; scales--)
 				pushBit(1);
 		} else {	// E2 scaling (interval in upper half)
-			pushBit(1);
 			low  = (low-HALF)*2;
 			high = (high-HALF)*2 + 1;
 			
+			pushBit(1);
 			for (; scales>0; scales--)
 				pushBit(0);
 		}
@@ -58,6 +56,16 @@ void Encoder::encode(SymbolSet& set, unsigned sym) {
 
 void Encoder::encode(uint32_t num, uint32_t max) {
 	encode(num, num+1, max);
+}
+
+void Encoder::finish() {printf("scales at finish: %i\n", scales);printf("curBits at finish: %i\n", curBits);
+	if (scales > 0) {
+		pushBit(0);
+		for (; scales>0; scales--)
+			pushBit(1);
+	}
+	while (curBits != 0)
+		pushBit(0);
 }
 
 void Encoder::pushBit(bool bit) {

@@ -20,6 +20,7 @@ namespace dgrid { namespace util {
 		void addSymbol(uint32_t p);
 		
 		friend class Encoder;
+		friend class Decoder;
 		
 	protected:
 		std::vector<uint32_t> high_counts, low_counts;

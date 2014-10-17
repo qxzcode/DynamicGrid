@@ -21,7 +21,7 @@ PixelWorldGen::PixelWorldGen(unsigned long seed):
 
 extern dgrid::Chunk* compChunk;
 
-void PixelWorldGen::generateChunk(dgrid::World* world, dgrid::Chunk* chunk) {compChunk = chunk;
+void PixelWorldGen::generateChunk(dgrid::World* world, dgrid::Chunk* chunk) {
 	// init layer data
 //	chunk->layers[2].data = new dgrid::EntityLayerData();
 	
@@ -79,7 +79,7 @@ void PixelWorldGen::generateChunk(dgrid::World* world, dgrid::Chunk* chunk) {com
 			chunk->layers[2][x][y] = EMPTY;
 		}
 	}
-}
+compChunk = chunk;}
 
 
 

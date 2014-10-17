@@ -13,6 +13,7 @@
 #include "LayerData.h"
 #include "TileTypes.h"
 #include "Encoder.h"
+#include "Decoder.h"
 
 using namespace dgrid;
 
@@ -137,9 +138,9 @@ void Chunk::compress(unsigned char* &data, unsigned int &len) {
 		for (int i=0; i<10; i++) {
 			symbols.addSymbol(counts[i]);
 			
+			encoder.encode(counts[i], CHUNK_SIZE*CHUNK_SIZE+1);
+			encoder.encode(i, 256);
 			if (counts[i] > 0) {
-				encoder.encode(counts[i], CHUNK_SIZE*CHUNK_SIZE+1);
-				encoder.encode(i, 256);
 				printf("\t%i: %i (%f%%)\n", i, counts[i], 100*float(counts[i])/float(CHUNK_SIZE*CHUNK_SIZE));
 			}
 		}
@@ -149,12 +150,42 @@ void Chunk::compress(unsigned char* &data, unsigned int &len) {
 				encoder.encode(symbols, getTile(l, x, y));
 			}
 		}
+	}printf("bytes before padding = %lu\n", encoder.len());
+	for (int x = 0; x < 3; x++) {
+		for (int y = 0; y < 1; y++) {
+			encoder.encode(getTile(1, x, y), 256);
+		}
 	}
+	printf("bytes after padding = %lu\n", encoder.len());
+	encoder.finish();
 	
 	unsigned long before = (NUM_LAYERS-1)*CHUNK_SIZE*CHUNK_SIZE*sizeof(tileID), after = encoder.len();
 	printf("Bytes before compression: %lu (%lukb)\n", before, before/1024);
 	printf("Bytes after compression: %lu (%lukb)\n", after, after/1024);
 	printf("Compression ratio: %f%%\n\n\n", 100*float(after)/float(before));
+	
+	// check data
+	util::Decoder decoder(encoder.data(), encoder.len());
+	for (int l = 0; l < NUM_LAYERS-1; l++) {printf("Layer = %i\n", l);
+		util::SymbolSet symbols;
+		printf("Counts:\n");
+		for (int i=0; i<10; i++) {
+			uint32_t count = decoder.read(CHUNK_SIZE*CHUNK_SIZE+1);
+			symbols.addSymbol(count);
+			uint32_t i2 = decoder.read(256);
+			if (i2 != i)
+				printf("ERROR i=%i, i2=%i\n", i, i2);
+			if (count > 0) {
+				printf("\t%i: %i\n", i, count);
+			}
+		}
+		for (int x = 0; x < CHUNK_SIZE; x++) {
+			for (int y = 0; y < CHUNK_SIZE; y++) {
+				if (decoder.read(symbols) != getTile(l, x, y))
+					printf("ERROR (%i, %i)\n", x, y);
+			}
+		}
+	}
 }
 
 Chunk::Layer::~Layer() {

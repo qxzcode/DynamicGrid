@@ -24,6 +24,7 @@ namespace dgrid { namespace util {
 		void encode(uint32_t low_count, uint32_t high_count, uint32_t total);
 		void encode(SymbolSet& set, unsigned sym);
 		void encode(uint32_t num, uint32_t max);
+		void finish();
 		
 		byte* data() { return &bytes[0]; }
 		std::vector<byte>::size_type len() { return bytes.size(); }
@@ -32,9 +33,9 @@ namespace dgrid { namespace util {
 		void pushBit(bool bit);
 		
 		uint32_t low, high;
-		int scales;
+		unsigned scales;
 		std::vector<byte> bytes;
-		int curI, curBits;
+		unsigned curI, curBits;
 		
 	};
 	
