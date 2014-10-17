@@ -58,14 +58,20 @@ void Encoder::encode(uint32_t num, uint32_t max) {
 	encode(num, num+1, max);
 }
 
-void Encoder::finish() {printf("scales at finish: %i\n", scales);printf("curBits at finish: %i\n", curBits);
-	if (scales > 0) {
+void Encoder::finish() {
+	// properly terminate the stream of bits
+	if (low < QUART1) {	// low < QUART1 < HALF <= high
 		pushBit(0);
-		for (; scales>0; scales--)
+		for (int n=0; n<scales+1; n++) // 1 + [E3 scales]
 			pushBit(1);
+	} else {			// low < HALF < QUART3 <= high
+		pushBit(1);
+		// decoder adds zeros automatically
 	}
+	// shift the last byte into place and remove the tail
 	while (curBits != 0)
 		pushBit(0);
+	bytes.pop_back();
 }
 
 void Encoder::pushBit(bool bit) {

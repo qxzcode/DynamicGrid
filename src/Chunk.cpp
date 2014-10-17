@@ -124,6 +124,7 @@ void Chunk::compress(unsigned char* &data, unsigned int &len) {
 	printf("Compressing chunk (%i, %i)...\n", cx, cy);
 	util::Encoder encoder;
 	
+	// encode data
 	for (int l = 0; l < NUM_LAYERS-1; l++) {
 		uint32_t counts[10];
 		for (int i=0; i<10; i++) counts[i] = 0;
@@ -134,7 +135,7 @@ void Chunk::compress(unsigned char* &data, unsigned int &len) {
 			}
 		}
 		util::SymbolSet symbols;
-		printf("Counts:\n");
+		printf("Counts for layer %i:\n", l);
 		for (int i=0; i<10; i++) {
 			symbols.addSymbol(counts[i]);
 			
@@ -150,13 +151,7 @@ void Chunk::compress(unsigned char* &data, unsigned int &len) {
 				encoder.encode(symbols, getTile(l, x, y));
 			}
 		}
-	}printf("bytes before padding = %lu\n", encoder.len());
-	for (int x = 0; x < 3; x++) {
-		for (int y = 0; y < 1; y++) {
-			encoder.encode(getTile(1, x, y), 256);
-		}
 	}
-	printf("bytes after padding = %lu\n", encoder.len());
 	encoder.finish();
 	
 	unsigned long before = (NUM_LAYERS-1)*CHUNK_SIZE*CHUNK_SIZE*sizeof(tileID), after = encoder.len();
@@ -166,9 +161,9 @@ void Chunk::compress(unsigned char* &data, unsigned int &len) {
 	
 	// check data
 	util::Decoder decoder(encoder.data(), encoder.len());
-	for (int l = 0; l < NUM_LAYERS-1; l++) {printf("Layer = %i\n", l);
+	for (int l = 0; l < NUM_LAYERS-1; l++) {
 		util::SymbolSet symbols;
-		printf("Counts:\n");
+//		printf("Counts:\n");
 		for (int i=0; i<10; i++) {
 			uint32_t count = decoder.read(CHUNK_SIZE*CHUNK_SIZE+1);
 			symbols.addSymbol(count);
@@ -176,7 +171,7 @@ void Chunk::compress(unsigned char* &data, unsigned int &len) {
 			if (i2 != i)
 				printf("ERROR i=%i, i2=%i\n", i, i2);
 			if (count > 0) {
-				printf("\t%i: %i\n", i, count);
+//				printf("\t%i: %i\n", i, count);
 			}
 		}
 		for (int x = 0; x < CHUNK_SIZE; x++) {

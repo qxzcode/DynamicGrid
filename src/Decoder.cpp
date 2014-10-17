@@ -59,22 +59,19 @@ void Decoder::update(uint32_t low_count, uint32_t high_count) {
 			high = (high-HALF)*2 + 1;
 			buffer = (buffer-HALF)*2 + readBit();
 		}
-//		if (eof) return;
 	}
 	while ((QUART1<=low) && (high<QUART3)) {
 		low  = (low-QUART1)*2;
 		high = (high-QUART1)*2 + 1;
 		buffer = (buffer-QUART1)*2 + readBit();
-//		if (eof) return;
 	}
 }
 
 bool Decoder::readBit() {
 	bool bit = curByte>>7;
 	curByte <<= 1;
-	if (++curBit == 8) { // load the next byte, or 0 in case EOF
-		curByte = (eof = ++curI>=len)? 0 : data[curI];
-		if (eof) printf("EOF\n");
+	if (++curBit == 8) { // load the next byte, or 0x00 in case EOF
+		curByte = ++curI>=1+len? 0 : data[curI];
 		curBit = 0;
 	}
 	return bit;

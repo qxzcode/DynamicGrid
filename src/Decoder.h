@@ -32,7 +32,6 @@ namespace dgrid { namespace util {
 		unsigned long len, curI;
 		uint32_t low, high, step, buffer;
 		byte curByte, curBit;
-		bool eof = false;
 		
 	};
 	
