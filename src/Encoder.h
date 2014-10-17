@@ -11,6 +11,8 @@
 #include <stdint.h>
 #include <vector>
 
+#include "SymbolSet.h"
+
 namespace dgrid { namespace util {
 	
 	typedef unsigned char byte;
@@ -20,6 +22,8 @@ namespace dgrid { namespace util {
 		Encoder();
 		
 		void encode(uint32_t low_count, uint32_t high_count, uint32_t total);
+		void encode(SymbolSet& set, unsigned sym);
+		
 		byte* data() { return &bytes[0]; }
 		std::vector<byte>::size_type len() { return bytes.size(); }
 		

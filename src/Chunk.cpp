@@ -12,6 +12,7 @@
 #include "Color.h"
 #include "LayerData.h"
 #include "TileTypes.h"
+#include "Encoder.h"
 
 using namespace dgrid;
 
@@ -116,6 +117,43 @@ void Chunk::setTile(int l, int x, int y, tileID tile) {
 		}
 		dirty = true;
 	}
+}
+
+void Chunk::compress(unsigned char* &data, unsigned int &len) {
+	printf("Compressing chunk (%i, %i)...\n", cx, cy);
+	util::Encoder encoder;
+	
+	for (int l = 0; l < NUM_LAYERS-1; l++) {
+		uint32_t counts[10];
+		for (int i=0; i<10; i++) counts[i] = 0;
+		
+		for (int x = 0; x < CHUNK_SIZE; x++) {
+			for (int y = 0; y < CHUNK_SIZE; y++) {
+				counts[getTile(l, x, y)]++;
+			}
+		}
+		util::SymbolSet symbols;
+		printf("Counts:\n");
+		for (int i=0; i<10; i++) {
+			symbols.addSymbol(counts[i]);
+			encoder.encode(counts[i], counts[i]+1, CHUNK_SIZE*CHUNK_SIZE);
+			
+			if (counts[i] > 0) {
+				printf("\t%i: %i (%f%%)\n", i, counts[i], 100*float(counts[i])/float(CHUNK_SIZE*CHUNK_SIZE));
+			}
+		}
+		
+		for (int x = 0; x < CHUNK_SIZE; x++) {
+			for (int y = 0; y < CHUNK_SIZE; y++) {
+				encoder.encode(symbols, getTile(l, x, y));
+			}
+		}
+	}
+	
+	unsigned long before = (NUM_LAYERS-1)*CHUNK_SIZE*CHUNK_SIZE*sizeof(tileID), after = encoder.len();
+	printf("Bytes before compression: %lu (%lukb)\n", before, before/1024);
+	printf("Bytes after compression: %lu (%lukb)\n", after, after/1024);
+	printf("Compression ratio: %f%%\n\n", 100*float(after)/float(before));
 }
 
 Chunk::Layer::~Layer() {

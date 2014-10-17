@@ -24,6 +24,8 @@ namespace dgrid {
 		tileID getTile(int l, int x, int y) { return layers[l][x][y]; }
 		void setTile(int l, int x, int y, tileID tile);
 		
+		void compress(unsigned char* &data, unsigned &len);
+		
 		friend class World;
 		
 //	protected:

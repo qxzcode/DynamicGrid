@@ -19,7 +19,9 @@ PixelWorldGen::PixelWorldGen(unsigned long seed):
 						grassFray(seed++),
 						dirtRocks(seed++) {}
 
-void PixelWorldGen::generateChunk(dgrid::World* world, dgrid::Chunk* chunk) {
+extern dgrid::Chunk* compChunk;
+
+void PixelWorldGen::generateChunk(dgrid::World* world, dgrid::Chunk* chunk) {compChunk = chunk;
 	// init layer data
 //	chunk->layers[2].data = new dgrid::EntityLayerData();
 	

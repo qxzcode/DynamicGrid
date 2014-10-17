@@ -11,7 +11,7 @@
 using namespace dgrid::util;
 
 Encoder::Encoder():low(0),high(0x7FFFFFFF),scales(0),curI(0),curBits(0) {
-	
+	bytes.push_back(0);
 }
 
 static const uint32_t QUART1 = 0x20000000;
@@ -50,6 +50,10 @@ void Encoder::encode(uint32_t low_count, uint32_t high_count, uint32_t total) {
 		low  = (low-QUART1)*2;
 		high = (high-QUART1)*2 + 1;
 	}
+}
+
+void Encoder::encode(SymbolSet& set, unsigned sym) {
+	encode(set.low_counts[sym], set.high_counts[sym], set.total);
 }
 
 void Encoder::pushBit(bool bit) {

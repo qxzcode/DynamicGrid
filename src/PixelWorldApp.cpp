@@ -41,6 +41,10 @@ void PixelWorldApp::keyUp(KeyEvent event) {
 	key(event.getCode(), false);
 }
 
+static bool compress = false;
+#include "Chunk.h"
+dgrid::Chunk* compChunk;
+
 void PixelWorldApp::key(int code, bool down) {
 	switch (code) {
 		case KeyEvent::KEY_a:
@@ -51,6 +55,10 @@ void PixelWorldApp::key(int code, bool down) {
 			break;
 		case KeyEvent::KEY_SPACE:
 			jumpDown = down;
+			break;
+			
+		case KeyEvent::KEY_c:
+			compress = down;
 			break;
 	}
 }
@@ -72,6 +80,14 @@ void PixelWorldApp::update() {
 	// update game
 	static const float DT_MAX = 1.0f/30.0f; // cap dt to prevent glitches in cases of extreme lag (such as when the world first loads)
 	world.update(dt>DT_MAX? DT_MAX : dt);
+	
+	// TESTING
+	if (compress) {
+		compress = false;
+		unsigned char* data = NULL;
+		unsigned len;
+		compChunk->compress(data, len);
+	}
 }
 
 void PixelWorldApp::draw() {
