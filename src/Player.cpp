@@ -15,8 +15,8 @@ bool Player::update(float dt) {
 	if (leftDown)  sx -= 200*dt;
 	if (rightDown) sx += 200*dt;
 	if (jumpDown) {
-		if (onGround)
-			sy = -250;
+//		if (onGround)
+//			sy = -250;
 		int num = 1000*dt;
 		for (int n = 0; n < num; n++)
 			world->spawnParticle(int(x), int(y));
