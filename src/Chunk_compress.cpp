@@ -28,6 +28,8 @@ static void compressLayer(Chunk::Layer &tiles, util::Encoder &encoder) {
 	for (int i=0; i<10; i++) tileCounts[i] = 0;
 	uint32_t entryCounts[3]; // counts of each entry type
 	for (int i=0; i<3; i++) entryCounts[i] = 0;
+	uint32_t offsetCounts[CHUNK_SIZE*2]; // counts of each offset value
+	for (int i=0; i<CHUNK_SIZE*2; i++) offsetCounts[i] = 0;
 	
 	// find dividers
 	std::vector<div> lines[CHUNK_SIZE];
@@ -36,12 +38,10 @@ static void compressLayer(Chunk::Layer &tiles, util::Encoder &encoder) {
 		// find dividers in this line
 		div lastDiv = {0, tiles[x][0]};
 		lines[x].push_back(lastDiv);
-		tileCounts[lastDiv.tile]++;
 		for (unsigned y = 1; y < CHUNK_SIZE; y++) {
 			tileID t = tiles[x][y];
 			if (t != lastDiv.tile) {
 				lines[x].push_back(lastDiv = {y, t});
-				tileCounts[t]++;
 			}
 		}
 		
@@ -49,41 +49,70 @@ static void compressLayer(Chunk::Layer &tiles, util::Encoder &encoder) {
 		if (x == 0) {
 			// first line; encode all divs as ADD
 			for (div d : lines[x]) {
-				entries[x].push_back({ADD, d.pos, 0, d.tile});
+				entries[x].push_back({ADD, d.pos, 0/*unused*/, d.tile});
+				tileCounts[d.tile]++;
 			}
 		} else {
 			std::vector<div> &T = lines[x-1], &B = lines[x];
 			
 			// find OFFSET pairs
-			int *bPairD = new int[B.size()]; // distances of matches
-			int *bPairI = new int[B.size()]; // indices in T of matches
-			for (int i=0; i<B.size(); i++) bPairI[i] = -1;
-			for (int ti = 0; ti < T.size(); ti++) {
-				// find closest divider in B
-				div &t = T[ti];
-				int closestI;
+			int *tPairD = new int[T.size()]; // deltas of matches
+			int *tPairI = new int[T.size()]; // indices in B of matches
+			for (int i=0; i<T.size(); i++) {tPairI[i] = -1;tPairD[i] = CHUNK_SIZE+1;}
+			for (int bi = 0; bi < B.size(); bi++) {
+				// find closest divider in T
+				div &b = B[bi];
+				int closestI = -1;
 				int dist = CHUNK_SIZE+1;
-				for (int bi = 0; bi < B.size(); bi++) {
-					div &b = B[bi];
+				for (int ti = 0; ti < T.size(); ti++) {
+					div &t = T[ti];
 					if (b.tile != t.tile) continue;
-					int d = abs(t.pos-b.pos);
-					if (d < dist) {
+					int d = b.pos-t.pos;
+					if (abs(d) < abs(dist)) {
 						dist = d;
-						closestI = bi;
+						closestI = ti;
 					}
 				}
 				
-				// check if t is new closest to b
-				if (dist < bPairD[closestI]) {
-					bPairD[closestI] = dist;
-					bPairI[closestI] = ti;
+				if (closestI == -1) continue;
+				
+				// check if b is new closest to t
+				if (dist < tPairD[closestI]) {
+					tPairD[closestI] = dist;
+					tPairI[closestI] = bi;
 				}
 			}
 			
+			// find matches in B
+			bool *bMatched = new bool[B.size()];
+			for (int i=0; i<B.size(); i++) bMatched[i] = false;
+			for (int i=0; i<T.size(); i++) if (tPairI[i]!=-1) bMatched[tPairI[i]] = true;
 			
+			// convert to entries
+			for (int ti=0, bi=0; ti<T.size(); ti++) {
+				// OFFSET & REMOVE entries
+				if (tPairI[ti] != -1) { // if this t has a match in B
+					// OFFSET entry
+					entries[x].push_back({OFFSET, B[tPairI[ti]].pos, tPairD[ti]});
+					entryCounts[OFFSET]++;
+					offsetCounts[tPairD[ti]+CHUNK_SIZE]++;
+				} else {
+					// t isn't matched; REMOVE entry
+					entries[x].push_back({REMOVE});
+					entryCounts[REMOVE]++;
+				}
+				// ADD entries
+				for (; bi<B.size()&&(ti==T.size()-1||B[bi].pos<=T[ti+1].pos); bi++) {
+					if (!bMatched[bi]) {
+						entries[x].push_back({ADD, B[bi].pos, 0/*unused*/, B[bi].tile});
+						entryCounts[ADD]++;
+						tileCounts[B[bi].tile]++;
+					}
+				}
+			}
 			
-			delete [] bPairI;
-			delete [] bPairD;
+			delete [] tPairI;
+			delete [] tPairD;
 		}
 	}
 	
@@ -96,6 +125,15 @@ static void compressLayer(Chunk::Layer &tiles, util::Encoder &encoder) {
 			encoder.encode(tileCounts[i], CHUNK_SIZE*CHUNK_SIZE+1);
 		}
 	}
+//	util::SymbolSet offsetSymbols;
+//	for (int i = 0; i < CHUNK_SIZE*2; i++) {
+//		offsetSymbols.addSymbol(offsetCounts[i]);
+//		if (offsetCounts[i] > 0) {
+////			encoder.encode(i, CHUNK_SIZE*2);
+////			encoder.encode(offsetCounts[i], CHUNK_SIZE*CHUNK_SIZE+1);
+//			printf("Offset %i: count %i\n", i-CHUNK_SIZE, offsetCounts[i]);
+//		}
+//	}
 	util::SymbolSet entrySymbols;
 	entrySymbols.addSymbol(entryCounts[OFFSET]);
 	entrySymbols.addSymbol(entryCounts[ADD]);
@@ -104,13 +142,27 @@ static void compressLayer(Chunk::Layer &tiles, util::Encoder &encoder) {
 	
 	// encode lines
 	for (unsigned x = 0; x < CHUNK_SIZE; x++) {
-		// encode entries
+		// encode entries for this line
 		unsigned lastPos = 0;
 		for (entry e : entries[x]) {
-			if (x != 0)
+			if (x != 0) // all entries on first line are ADD
 				encoder.encode(entrySymbols, e.type);
 			if (e.type == OFFSET) {
-				//...
+				//// TMP ////
+				util::SymbolSet offsetSymbols;
+				unsigned tPos = e.pos-e.delta;
+				int minI = (lastPos-tPos)+CHUNK_SIZE;
+				for (int i = minI; i < CHUNK_SIZE*2; i++) {
+					offsetSymbols.addSymbol(offsetCounts[i]);
+					if (offsetCounts[i] > 0) {
+						//			encoder.encode(i, CHUNK_SIZE*2);
+						//			encoder.encode(offsetCounts[i], CHUNK_SIZE*CHUNK_SIZE+1);
+						//printf("Offset %i: count %i\n", i-CHUNK_SIZE, offsetCounts[i]);
+					}
+				}
+				/////////////
+//				encoder.encode(offsetSymbols, e.delta+CHUNK_SIZE-minI);
+				lastPos = e.pos;
 			} else if (e.type == ADD) {
 				encoder.encode(e.pos-lastPos, CHUNK_SIZE-lastPos);
 				lastPos = e.pos;
@@ -119,6 +171,7 @@ static void compressLayer(Chunk::Layer &tiles, util::Encoder &encoder) {
 				// no extra data
 			}
 		}
+		// encode end-of-line
 		encoder.encode(entrySymbols, END_OF_LINE);
 	}
 	
