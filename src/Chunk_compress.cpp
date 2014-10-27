@@ -240,21 +240,17 @@ static void compressLayer(Chunk::Layer &tiles, util::Encoder &encoder) {
 #include <fstream>
 
 void Chunk::compress(unsigned char* &data, unsigned int &len) {
-	printf("Compressing chunk (%i, %i)...\n", cx, cy);
-	util::Encoder encoder;
-	
 	// encode data
+	util::Encoder encoder;
 	for (int l = 0; l < NUM_LAYERS-1; l++) {
 		compressLayer(layers[l], encoder);
 	}
 	encoder.finish();
-	data = encoder.data();
-	len = encoder.len();
 	
-	unsigned long before = (NUM_LAYERS-1)*CHUNK_SIZE*CHUNK_SIZE*sizeof(tileID), after = encoder.len();
-	printf("Bytes before compression: %lu (%.1fkb)\n", before, before/1024.0f);
-	printf("Bytes after compression: %lu (%.1fkb)\n", after, after/1024.0f);
-	printf("Compression ratio: %f%%\n\n\n", 100*float(after)/float(before));
+	// return encoded bytes
+	len = encoder.len();
+	data = new unsigned char[len];
+	memcpy(data, encoder.data(), len);
 	
 //	// print bits
 //	for (unsigned i = 0; i < len; i++) {
@@ -277,29 +273,6 @@ void Chunk::compress(unsigned char* &data, unsigned int &len) {
 //		}
 //	}
 //	file.close();
-	
-	return;
-	
-	// check data
-	util::Decoder decoder(encoder.data(), encoder.len());
-	for (int l = 0; l < NUM_LAYERS-1; l++) {
-		util::SymbolSet symbols;
-		//		printf("Counts:\n");
-		for (int i=0; i<10; i++) {
-			uint32_t count = decoder.read(CHUNK_SIZE*CHUNK_SIZE+1);
-			symbols.addSymbol(count);
-			uint32_t i2 = decoder.read(256);
-			if (i2 != i)
-				printf("ERROR i=%i, i2=%i\n", i, i2);
-			if (count > 0) {
-				//				printf("\t%i: %i\n", i, count);
-			}
-		}
-		for (int x = 0; x < CHUNK_SIZE; x++) {
-			for (int y = 0; y < CHUNK_SIZE; y++) {
-				if (decoder.read(symbols) != getTile(l, x, y))
-					printf("ERROR (%i, %i)\n", x, y);
-			}
-		}
-	}
 }
+
+

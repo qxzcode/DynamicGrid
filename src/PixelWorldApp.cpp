@@ -84,9 +84,15 @@ void PixelWorldApp::update() {
 	// TESTING
 	if (compress) {
 		compress = false;
-		unsigned char* data = NULL;
+		printf("Compressing chunk (%i, %i)...\n", compChunk->cx, compChunk->cy);
+		unsigned char* data;
 		unsigned len;
 		compChunk->compress(data, len);
+		
+		unsigned long before = (NUM_LAYERS-1)*CHUNK_SIZE*CHUNK_SIZE*sizeof(tileID), after = len;
+		printf("Bytes before compression: %lu (%.1fkb)\n", before, before/1024.0f);
+		printf("Bytes after compression: %lu (%.1fkb)\n", after, after/1024.0f);
+		printf("Compression ratio: %f%%\n\n\n", 100*float(after)/float(before));
 	}
 }
 
