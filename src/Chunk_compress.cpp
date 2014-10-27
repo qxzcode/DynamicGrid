@@ -31,6 +31,7 @@ static void compressLayer(Chunk::Layer &tiles, util::Encoder &encoder) {
 	uint32_t offsetCounts[CHUNK_SIZE*2]; // counts of each offset value
 	for (int i=0; i<CHUNK_SIZE*2; i++) offsetCounts[i] = 0;
 	
+	
 	// find dividers
 	std::vector<div> lines[CHUNK_SIZE];
 	std::vector<entry> entries[CHUNK_SIZE];
@@ -125,19 +126,35 @@ static void compressLayer(Chunk::Layer &tiles, util::Encoder &encoder) {
 			encoder.encode(tileCounts[i], CHUNK_SIZE*CHUNK_SIZE+1);
 		}
 	}
-//	util::SymbolSet offsetSymbols;
-//	for (int i = 0; i < CHUNK_SIZE*2; i++) {
-//		offsetSymbols.addSymbol(offsetCounts[i]);
-//		if (offsetCounts[i] > 0) {
-////			encoder.encode(i, CHUNK_SIZE*2);
-////			encoder.encode(offsetCounts[i], CHUNK_SIZE*CHUNK_SIZE+1);
-//			printf("Offset %i: count %i\n", i-CHUNK_SIZE, offsetCounts[i]);
-//		}
-//	}
+	util::SymbolSet offsetSymbols;
+	util::SymbolSet tmpSymbols;
+	tmpSymbols.addSymbol(1);
+	tmpSymbols.addSymbol(100);
+	for (int i = 0; i < CHUNK_SIZE*2; i++) {
+		uint32_t count = offsetCounts[i];
+		offsetSymbols.addSymbol(count);
+		if (count > 0) {
+			encoder.encode(i, CHUNK_SIZE*2); // TODO: optimize these maximum values
+			if (abs(i-CHUNK_SIZE) > 20) {
+				if (count <= 5) {
+					encoder.encode(tmpSymbols, 1);
+					encoder.encode(count-1, 5);
+				} else {
+					encoder.encode(tmpSymbols, 0);
+					encoder.encode(count-1, CHUNK_SIZE*CHUNK_SIZE);
+				}
+			} else {
+				encoder.encode(count-1, CHUNK_SIZE*CHUNK_SIZE);
+			}
+		}
+	}
 	util::SymbolSet entrySymbols;
 	entrySymbols.addSymbol(entryCounts[OFFSET]);
+	encoder.encode(entryCounts[OFFSET], CHUNK_SIZE*CHUNK_SIZE);
 	entrySymbols.addSymbol(entryCounts[ADD]);
+	encoder.encode(entryCounts[ADD], CHUNK_SIZE*CHUNK_SIZE);
 	entrySymbols.addSymbol(entryCounts[REMOVE]);
+	encoder.encode(entryCounts[REMOVE], CHUNK_SIZE*CHUNK_SIZE);
 	entrySymbols.addSymbol(CHUNK_SIZE); // end-of-line symbol
 	
 	// encode lines
@@ -147,21 +164,11 @@ static void compressLayer(Chunk::Layer &tiles, util::Encoder &encoder) {
 		for (entry e : entries[x]) {
 			if (x != 0) // all entries on first line are ADD
 				encoder.encode(entrySymbols, e.type);
+			
 			if (e.type == OFFSET) {
-				//// TMP ////
-				util::SymbolSet offsetSymbols;
-				unsigned tPos = e.pos-e.delta;
-				int minI = (lastPos-tPos)+CHUNK_SIZE;
-				for (int i = minI; i < CHUNK_SIZE*2; i++) {
-					offsetSymbols.addSymbol(offsetCounts[i]);
-					if (offsetCounts[i] > 0) {
-						//			encoder.encode(i, CHUNK_SIZE*2);
-						//			encoder.encode(offsetCounts[i], CHUNK_SIZE*CHUNK_SIZE+1);
-						//printf("Offset %i: count %i\n", i-CHUNK_SIZE, offsetCounts[i]);
-					}
-				}
-				/////////////
-//				encoder.encode(offsetSymbols, e.delta+CHUNK_SIZE-minI);
+//				unsigned tPos = e.pos-e.delta;
+//				int minI = (lastPos-tPos)+CHUNK_SIZE;
+				encoder.encode(offsetSymbols, e.delta+CHUNK_SIZE/*, minI*/); // TODO: optimize this
 				lastPos = e.pos;
 			} else if (e.type == ADD) {
 				encoder.encode(e.pos-lastPos, CHUNK_SIZE-lastPos);
@@ -249,27 +256,27 @@ void Chunk::compress(unsigned char* &data, unsigned int &len) {
 	printf("Bytes after compression: %lu (%.1fkb)\n", after, after/1024.0f);
 	printf("Compression ratio: %f%%\n\n\n", 100*float(after)/float(before));
 	
-	/*// print bits
-	for (unsigned i = 0; i < len; i++) {
-		printf("%i", !!(data[i]&1));
-		printf("%i", !!(data[i]&2));
-		printf("%i", !!(data[i]&4));
-		printf("%i", !!(data[i]&8));
-		printf("%i", !!(data[i]&16));
-		printf("%i", !!(data[i]&32));
-		printf("%i", !!(data[i]&64));
-		printf("%i", !!(data[i]&128));
-	}*/
-	std::ofstream file("/Users/quinn/test_compressed.dat");
-	file.write((char*)data, len);
-	file.close();
-	file = std::ofstream("/Users/quinn/test.dat");
-	for (int l = 0; l < NUM_LAYERS-1; l++) {
-		for (int x = 0; x < CHUNK_SIZE; x++) {
-			file.write((char*)layers[l][x], CHUNK_SIZE*sizeof(tileID));
-		}
-	}
-	file.close();
+//	// print bits
+//	for (unsigned i = 0; i < len; i++) {
+//		printf("%i", !!(data[i]&1));
+//		printf("%i", !!(data[i]&2));
+//		printf("%i", !!(data[i]&4));
+//		printf("%i", !!(data[i]&8));
+//		printf("%i", !!(data[i]&16));
+//		printf("%i", !!(data[i]&32));
+//		printf("%i", !!(data[i]&64));
+//		printf("%i", !!(data[i]&128));
+//	}
+//	std::ofstream file("/Users/quinn/test_compressed.dat");
+//	file.write((char*)data, len);
+//	file.close();
+//	file = std::ofstream("/Users/quinn/test.dat");
+//	for (int l = 0; l < NUM_LAYERS-1; l++) {
+//		for (int x = 0; x < CHUNK_SIZE; x++) {
+//			file.write((char*)layers[l][x], CHUNK_SIZE*sizeof(tileID));
+//		}
+//	}
+//	file.close();
 	
 	return;
 	

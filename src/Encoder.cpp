@@ -54,6 +54,11 @@ void Encoder::encode(SymbolSet& set, unsigned sym) {
 	encode(set.low_counts[sym], set.high_counts[sym], set.total);
 }
 
+void Encoder::encode(SymbolSet& set, unsigned sym, unsigned minSym) {
+	unsigned d = set.low_counts[minSym];
+	encode(set.low_counts[sym]-d, set.high_counts[sym]-d, set.total-d);
+}
+
 void Encoder::encode(uint32_t num, uint32_t max) {
 	encode(num, num+1, max);
 }

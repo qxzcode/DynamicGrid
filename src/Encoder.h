@@ -23,6 +23,7 @@ namespace dgrid { namespace util {
 		
 		void encode(uint32_t low_count, uint32_t high_count, uint32_t total);
 		void encode(SymbolSet& set, unsigned sym);
+		void encode(SymbolSet& set, unsigned sym, unsigned minSym);
 		void encode(uint32_t num, uint32_t max);
 		void finish();
 		
