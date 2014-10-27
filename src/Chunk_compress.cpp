@@ -181,63 +181,9 @@ static void compressLayer(Chunk::Layer &tiles, util::Encoder &encoder) {
 		// encode end-of-line
 		encoder.encode(entrySymbols, END_OF_LINE);
 	}
-	
-	
-	
-	
-	return;
-	
-	// */ /*
-	
-	
-	struct run{unsigned len,max;tileID tile;};
-	
-	// parse runs & count symbols
-	std::vector<run> runs;
-	uint32_t counts[10];
-	for (int i=0; i<10; i++) counts[i] = 0;
-	for (int x = 0; x < CHUNK_SIZE; x++) {
-		run curRun;
-		for (int y = 0; y < CHUNK_SIZE; y++) {
-			tileID t = tiles[x][y];
-			if (y==0) {
-				curRun = {0,CHUNK_SIZE,t};
-				counts[t]++;
-			} else if (t != curRun.tile) {
-				runs.push_back(curRun);
-				curRun = {0,curRun.max-curRun.len,t};
-				counts[t]++;
-			} else {
-				curRun.len++;
-			}
-		}
-		runs.push_back(curRun);
-	}
-	
-	// populate SymbolSet
-	util::SymbolSet symbols;
-	for (int i = 0; i < 10; i++) {
-		symbols.addSymbol(counts[i]);
-		if (counts[i] > 0) {
-			encoder.encode(i, 256);
-			encoder.encode(counts[i], CHUNK_SIZE*CHUNK_SIZE+1);
-			printf("Count of %i: %i\n", i, counts[i]);
-		}
-	}
-	
-	// encode runs
-	for (run r : runs) {
-		encoder.encode(r.len, r.max);
-		encoder.encode(symbols, r.tile);
-	}
-	// */
-	
-	
 }
 
 //////////////////////
-
-#include <fstream>
 
 void Chunk::compress(unsigned char* &data, unsigned int &len) {
 	// encode data
