@@ -65,7 +65,7 @@ static void compressLayer(Chunk::Layer &tiles, util::Encoder &encoder) {
 				div &b = B[bi];
 				int closestI = -1;
 				int dist = CHUNK_SIZE+1;
-				for (int ti = 0; ti < T.size(); ti++) {
+				for (int ti = 0; ti < T.size(); ti++) { // TODO: optimize this
 					div &t = T[ti];
 					if (b.tile != t.tile) continue;
 					int d = b.pos-t.pos;
