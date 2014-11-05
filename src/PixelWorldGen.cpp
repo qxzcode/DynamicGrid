@@ -79,7 +79,7 @@ void PixelWorldGen::generateChunk(dgrid::World* world, dgrid::Chunk* chunk) {
 			chunk->layers[2][x][y] = EMPTY;
 		}
 	}
-compChunk = chunk;}
+if(chunk->cx==0&&chunk->cy==0)compChunk = chunk;}
 
 
 

@@ -12,6 +12,9 @@
 
 #include "worldFormat.h"
 
+#include "Encoder.h"
+#include "Decoder.h"
+
 namespace dgrid {
 	
 	class Chunk {
@@ -22,10 +25,13 @@ namespace dgrid {
 		void draw(class World *world);
 		
 		tileID getTile(int l, int x, int y) { return layers[l][x][y]; }
+		tileID getTileSafe(int l, int x, int y);
 		void setTile(int l, int x, int y, tileID tile);
 		
 		// COMPRESSION STUFF //
-		void compress(unsigned char* &data, unsigned &len);
+		void compress(util::Encoder &encoder);
+		void compressLayerOffset(int l, util::Encoder &encoder);
+		void compressLayerChainCode(int l, util::Encoder &encoder);
 		///////////////////////
 		
 		friend class World;

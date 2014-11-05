@@ -10,14 +10,13 @@
 
 #include <stdlib.h>
 
-#include "Encoder.h"
-#include "Decoder.h"
-
 using namespace dgrid;
 
 // helper functions //
 
-static void compressLayer(Chunk::Layer &tiles, util::Encoder &encoder) {
+void Chunk::compressLayerOffset(int l, util::Encoder &encoder) {
+	Layer &tiles = layers[l];
+	
 	// structs
 	struct div{unsigned pos;tileID tile;};
 	struct entry{char type;unsigned pos;int delta;tileID tile;};
@@ -183,20 +182,118 @@ static void compressLayer(Chunk::Layer &tiles, util::Encoder &encoder) {
 	}
 }
 
+#include "TileTypes.h"
+#include <forward_list>
+static void rotateC(int &d) {
+	if (++d > 3)
+		d = 0;
+}
+static void rotateCC(int &d) {
+	if (--d < 0)
+		d = 3;
+}
+tileID Chunk::getTileSafe(int l, int x, int y) {
+	if (x>=0&&y>=0&&x<CHUNK_SIZE&&y<CHUNK_SIZE&&l>=0&&l<NUM_LAYERS)
+		return layers[l][x][y];
+	else return 255;
+}
+void Chunk::compressLayerChainCode(int l, util::Encoder &encoder) {
+	Layer &tiles = layers[l];
+	
+	uint32_t results[CHUNK_SIZE][CHUNK_SIZE], curPath = 0;
+	for (int y = 0; y < CHUNK_SIZE; y++)
+		for (int x = 0; x < CHUNK_SIZE; x++)
+			results[x][y] = 0;
+	for (int y = 0; y < CHUNK_SIZE; y++) {
+		tileID lastTile = tiles[0][y];
+		for (int x = 1; x < CHUNK_SIZE; x++) {
+			tileID t = tiles[x][y];
+			if (t != lastTile) {
+				lastTile = t;
+				
+				if (results[x][y]==0 && results[x-1][y]==0) {
+					// trace edge
+					enum DIR {XN,YN,XP,YP};
+					int counter = 0, len = 0;
+					curPath++;
+					for (int x2 = x, y2 = y, d = XN; !(x2==x&&y2==y&&counter>5) && counter < 20000; counter++) {
+						results[x2][y2] = curPath;
+						
+						switch (d) {
+							case XN:
+								if (getTileSafe(l, x2-1, y2-1) == t) {
+									x2--;
+									y2--;
+									d = YP; // rotate CC   (-)
+									len++;
+								} else if (getTileSafe(l, x2, y2-1) == t) {
+									y2--;	// no rotation (0)
+									len++;
+								} else {
+									d = YN; // rotate C    (+)
+								}
+								break;
+							case YN:
+								if (getTileSafe(l, x2+1, y2-1) == t) {
+									x2++;
+									y2--;
+									d = XN; // rotate CC
+									len++;
+								} else if (getTileSafe(l, x2+1, y2) == t) {
+									x2++;	// no rotation
+									len++;
+								} else {
+									d = XP; // rotate C
+								}
+								break;
+							case XP:
+								if (getTileSafe(l, x2+1, y2+1) == t) {
+									x2++;
+									y2++;
+									d = YN; // rotate CC
+									len++;
+								} else if (getTileSafe(l, x2, y2+1) == t) {
+									y2++;	// no rotation
+									len++;
+								} else {
+									d = YP; // rotate C
+								}
+								break;
+							case YP:
+								if (getTileSafe(l, x2-1, y2+1) == t) {
+									x2--;
+									y2++;
+									d = XP; // rotate CC
+									len++;
+								} else if (getTileSafe(l, x2-1, y2) == t) {
+									x2--;	// no rotation
+									len++;
+								} else {
+									d = XN; // rotate C
+								}
+								break;
+						}
+					}
+					if (counter>=20000)printf("COUNTER RAN OUT!\n");
+					printf("Path #%i: len=%i\n", curPath, len);
+				} // end trace path
+			} // end if (t != lastTile)
+		}
+	} // end scanning loops
+	
+	for (int y = 0; y < CHUNK_SIZE; y++)
+		for (int x = 0; x < CHUNK_SIZE; x++)
+			if (results[x][y])
+				setTile(l, x, y, ACID);
+}
+
 //////////////////////
 
-void Chunk::compress(unsigned char* &data, unsigned int &len) {
+void Chunk::compress(util::Encoder &encoder) {
 	// encode data
-	util::Encoder encoder;
 	for (int l = 0; l < NUM_LAYERS-1; l++) {
-		compressLayer(layers[l], encoder);
+		compressLayerChainCode(l, encoder);
 	}
-	encoder.finish();
-	
-	// return encoded bytes
-	len = encoder.len();
-	data = new unsigned char[len];
-	memcpy(data, encoder.data(), len);
 	
 //	// print bits
 //	for (unsigned i = 0; i < len; i++) {

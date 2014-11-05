@@ -85,11 +85,11 @@ void PixelWorldApp::update() {
 	if (compress) {
 		compress = false;
 		printf("Compressing chunk (%i, %i)...\n", compChunk->cx, compChunk->cy);
-		unsigned char* data;
-		unsigned len;
-		compChunk->compress(data, len);
+		dgrid::util::Encoder encoder;
+		compChunk->compressLayerChainCode(1, encoder);
+		encoder.finish();
 		
-		unsigned long before = (NUM_LAYERS-1)*CHUNK_SIZE*CHUNK_SIZE*sizeof(tileID), after = len;
+		unsigned long before = (NUM_LAYERS-1)*CHUNK_SIZE*CHUNK_SIZE*sizeof(tileID), after = encoder.len();
 		printf("Bytes before compression: %lu (%.1fkb)\n", before, before/1024.0f);
 		printf("Bytes after compression: %lu (%.1fkb)\n", after, after/1024.0f);
 		printf("Compression ratio: %f%%\n\n\n", 100*float(after)/float(before));
