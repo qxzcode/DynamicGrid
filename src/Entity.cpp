@@ -110,7 +110,7 @@ bool Entity::isColliding(double x, double y, int* cx, int* cy) {
 		int wx = mx+lx;
 		for (int ly = 0; ly < curSprite->h; ly++) {
 			int wy = my+ly;
-			if (TILE_SOLID[world->getTile(1, wx, wy)] && curSprite->solid(lx, ly)) {
+			if (world->tileTypes[world->getTile(1, wx, wy)].solid && curSprite->solid(lx, ly)) {
 				if (cx) *cx = lx;
 				if (cy) *cy = ly;
 				return true;

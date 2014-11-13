@@ -9,6 +9,7 @@
 #include "PixelWorldApp.h"
 
 #include "input.h"
+#include "TileTypes.h"
 
 PixelWorldApp::PixelWorldApp():generator(time(NULL)),world(&generator) {
 	
@@ -21,6 +22,7 @@ void PixelWorldApp::prepareSettings(Settings* settings) {
 void PixelWorldApp::setup() {
 	getWindow()->setTitle("Pixel World");
 	world.init();
+	initTiles(world.tileTypes);
 	getDelta();
 }
 

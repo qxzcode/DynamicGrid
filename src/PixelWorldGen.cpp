@@ -22,38 +22,17 @@ PixelWorldGen::PixelWorldGen(unsigned long seed):
 extern dgrid::Chunk* compChunk;
 
 void PixelWorldGen::generateChunk(dgrid::World* world, dgrid::Chunk* chunk) {
-	// init layer data
-//	chunk->layers[2].data = new dgrid::EntityLayerData();
-	
-	// fill with simplex noise!
-	
 	// generate noise
 	static const double scale = 128.0;
-#define P 8
-	bool noiseGrid[CHUNK_SIZE+P*2][CHUNK_SIZE+P*2];
-	float noiseVals[CHUNK_SIZE][CHUNK_SIZE];
-	for (int x = -P; x < CHUNK_SIZE+P; x++) {
-		for (int y = -P; y < CHUNK_SIZE+P; y++) {
-			double noise = baseTerrain.getNoise((chunk->cwx+x)/scale, (chunk->cwy+y)/scale);
-			noise = fabs(noise)*2.0 - 1.0; // ridged multifractal transform
-			if (x>=0&&x<CHUNK_SIZE&&y>=0&&y<CHUNK_SIZE)
-				noiseVals[x][y] = noise;
-			noiseGrid[x+P][y+P] = noise>-0.5;
-		}
-	}
 	
 	// fill tiles
 	for (int x = 0; x < CHUNK_SIZE; x++) {
 		for (int y = 0; y < CHUNK_SIZE; y++) {
 			// background
-			if (noiseVals[x][y]<-0.4) {
-				chunk->layers[0][x][y] = SKY;
-			} else {
-				chunk->layers[0][x][y] = DIRTBG;
-			}
+			chunk->layers[0][x][y] = DIRT;
 			
 			// foreground
-			if (!noiseGrid[x+P][y+P]) {
+			/*if (!noiseGrid[x+P][y+P]) {
 				chunk->layers[1][x][y] = EMPTY;
 			} else {
 				int emptyDist = P;
@@ -73,13 +52,20 @@ void PixelWorldGen::generateChunk(dgrid::World* world, dgrid::Chunk* chunk) {
 				} else {
 					chunk->layers[1][x][y] = dirtRocks.get(chunk->cwx+x, chunk->cwy+y)%35? DIRT : STONE;
 				}
+			}*/
+			double noise = baseTerrain.getNoise((chunk->cwx+x)/scale, (chunk->cwy+y)/scale);
+			noise = fabs(noise)*1.5 - 0.25; // ridged multifractal transform
+			if (grassFray.get(chunk->cwx+x, chunk->cwy+y)%100 < noise*100) {
+				chunk->layers[1][x][y] = GRASS;
+			} else {
+				chunk->layers[1][x][y] = EMPTY;
 			}
 			
 			// entities
 			chunk->layers[2][x][y] = EMPTY;
 		}
 	}
-if(chunk->cx==0&&chunk->cy==0)compChunk = chunk;}
+if(chunk->cx==0&&chunk->cy==0)compChunk=chunk;}
 
 
 

@@ -13,7 +13,7 @@
 class Player : public dgrid::Entity {
 public:
 	static Sprite sprite;
-	Player(dgrid::World* w, double x, double y):Entity(w, &Player::sprite, x, y) {}
+	Player(dgrid::World* w, double x, double y):Entity(w, &Player::sprite, x, y) {hasGravity = false;}
 	
 	bool update(float dt);
 };
