@@ -8,4 +8,6 @@
 
 #pragma once
 
-extern bool leftDown, rightDown, jumpDown;
+namespace input {
+	extern bool left, right, up, down;
+}

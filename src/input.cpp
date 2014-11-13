@@ -8,4 +8,6 @@
 
 #include "input.h"
 
-bool leftDown = false, rightDown = false, jumpDown = false;
+using namespace input;
+
+bool left = false, right = false, up = false, down = false;

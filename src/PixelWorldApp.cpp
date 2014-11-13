@@ -50,13 +50,16 @@ dgrid::Chunk* compChunk;
 void PixelWorldApp::key(int code, bool down) {
 	switch (code) {
 		case KeyEvent::KEY_a:
-			leftDown = down;
+			input::left = down;
 			break;
 		case KeyEvent::KEY_d:
-			rightDown = down;
+			input::right = down;
 			break;
-		case KeyEvent::KEY_SPACE:
-			jumpDown = down;
+		case KeyEvent::KEY_w:
+			input::up = down;
+			break;
+		case KeyEvent::KEY_s:
+			input::down = down;
 			break;
 			
 		case KeyEvent::KEY_c:
