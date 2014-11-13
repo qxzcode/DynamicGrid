@@ -8,6 +8,9 @@
 
 #include "input.h"
 
-using namespace input;
+#define INPUTVAR(name) bool input::name = false;
 
-bool left = false, right = false, up = false, down = false;
+INPUTVAR(left)
+INPUTVAR(right)
+INPUTVAR(up)
+INPUTVAR(down)
