@@ -11,7 +11,6 @@
 #include "World.h"
 #include "Color.h"
 #include "LayerData.h"
-#include "TileTypes.h"
 
 using namespace dgrid;
 
@@ -72,9 +71,7 @@ void Chunk::draw(World *world) {
 				Color tileColor;
 				for (int l = 0; l < NUM_LAYERS; l++) {
 					tileID t = layers[l][x][y];
-					const Color color = TILE_COLORS
-											[t]
-											[world->noise.tileColors.get(cwx+x, cwy+y)%100 < TILE_COLOR_RATES[t]];
+					Color color = world->tileTypes[t].getColor(world->noise.tileColors.get(cwx+x, cwy+y)%100);
 					tileColor = Color::blend(tileColor, color);
 				}
 				data[i++] = tileColor.r;

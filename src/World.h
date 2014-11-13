@@ -13,12 +13,12 @@
 #include <forward_list>
 #include "OpenGL.h"
 
+#include "TileSet.h"
 #include "worldFormat.h"
 #include "chunkCoords.h"
 #include "ChunkLoader.h"
 #include "SimplexNoise.h"
 #include "Entity.h"
-#include "Player.h"
 #include "util.h"
 
 
@@ -46,9 +46,11 @@ namespace dgrid {
 		int camX() const {return util::floor(player->x);}
 		int camY() const {return util::floor(player->y);}
 		
-		Player* player;
+		Entity* player;
 		
-		// noise for generation and rendering
+		TileSet tileTypes;
+		
+		// noise for rendering
 	protected:
 		struct NoiseContainer {
 			NoiseContainer(unsigned long seed):tileColors(seed++) {}

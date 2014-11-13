@@ -39,6 +39,8 @@ static void loadShader(GLuint prog, GLenum shaderType, const char* src) {
 	glAttachShader(prog, handle);
 }
 
+#include "Player.h"
+
 void World::init() {
 	chunkLoader.startWorker();
 	spawnEntity(player = new Player(this, 0, 0));
