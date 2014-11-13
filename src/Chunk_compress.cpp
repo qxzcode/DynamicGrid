@@ -210,7 +210,7 @@ void Chunk::compressLayerChainCode(int l, util::Encoder &encoder) {
 	symbols.addSymbol(1);
 	symbols.addSymbol(1);
 	
-	uint32_t results[CHUNK_SIZE][CHUNK_SIZE], pathLens[2000], curPath = 0;
+	uint32_t results[CHUNK_SIZE][CHUNK_SIZE], pathLens[2000], tLen = 0, curPath = 0;
 	for (int y = 0; y < CHUNK_SIZE; y++)
 		for (int x = 0; x < CHUNK_SIZE; x++)
 			results[x][y] = 0;
@@ -227,7 +227,7 @@ void Chunk::compressLayerChainCode(int l, util::Encoder &encoder) {
 					enum DIR {XN,YN,XP,YP};
 					int counter = 0, len = 0;
 					curPath++;
-					for (int x2 = x, y2 = y, d = XN; !(x2==x&&y2==y&&counter>=4) && counter < 20000; counter++) {
+					for (int x2 = x, y2 = y, d = XN; !(x2==x&&y2==y&&d==XN&&counter>=4) && counter < 20000; counter++) {
 						results[x2][y2] = curPath;
 						
 						switch (d) {
@@ -236,10 +236,10 @@ void Chunk::compressLayerChainCode(int l, util::Encoder &encoder) {
 									x2--;
 									y2--;
 									d = YP; // rotate CC   (-)
-									len++; encoder.encode(symbols, 0);
+									len++;tLen++; encoder.encode(symbols, 0);
 								} else if (getTileSafe(l, x2, y2-1) == t) {
 									y2--;	// no rotation (0)
-									len++; encoder.encode(symbols, 1);
+									len++;tLen++; encoder.encode(symbols, 1);
 								} else {
 									d = YN; // rotate C    (+)
 								}
@@ -249,10 +249,10 @@ void Chunk::compressLayerChainCode(int l, util::Encoder &encoder) {
 									x2++;
 									y2--;
 									d = XN; // rotate CC
-									len++; encoder.encode(symbols, 2);
+									len++;tLen++; encoder.encode(symbols, 2);
 								} else if (getTileSafe(l, x2+1, y2) == t) {
 									x2++;	// no rotation
-									len++; encoder.encode(symbols, 3);
+									len++;tLen++; encoder.encode(symbols, 3);
 								} else {
 									d = XP; // rotate C
 								}
@@ -262,10 +262,10 @@ void Chunk::compressLayerChainCode(int l, util::Encoder &encoder) {
 									x2++;
 									y2++;
 									d = YN; // rotate CC
-									len++; encoder.encode(symbols, 4);
+									len++;tLen++; encoder.encode(symbols, 4);
 								} else if (getTileSafe(l, x2, y2+1) == t) {
 									y2++;	// no rotation
-									len++; encoder.encode(symbols, 5);
+									len++;tLen++; encoder.encode(symbols, 5);
 								} else {
 									d = YP; // rotate C
 								}
@@ -275,10 +275,10 @@ void Chunk::compressLayerChainCode(int l, util::Encoder &encoder) {
 									x2--;
 									y2++;
 									d = XP; // rotate CC
-									len++; encoder.encode(symbols, 6);
+									len++;tLen++; encoder.encode(symbols, 6);
 								} else if (getTileSafe(l, x2-1, y2) == t) {
 									x2--;	// no rotation
-									len++; encoder.encode(symbols, 7);
+									len++;tLen++; encoder.encode(symbols, 7);
 								} else {
 									d = XN; // rotate C
 								}
@@ -287,16 +287,18 @@ void Chunk::compressLayerChainCode(int l, util::Encoder &encoder) {
 					}
 					pathLens[curPath] = len;
 					
-					if (counter>=20000)printf("COUNTER RAN OUT!\n");
-					//printf("Path #%i: len=%i\n", curPath, len);
+//					if (counter>=20000)printf("COUNTER RAN OUT!\n");
+//					printf("Path #%i: len=%i\n", curPath, len);
 				} // end trace path
 			} // end if (t != lastTile)
 		}
 	} // end scanning loops
 	
+	printf("NUMBER OF PATHS: %i\n", curPath);
+	printf("TOTAL SEGMENTS:  %i\n", tLen);
 	for (int y = 0; y < CHUNK_SIZE; y++)
 		for (int x = 0; x < CHUNK_SIZE; x++)
-			if (pathLens[results[x][y]] > 50)
+			if (pathLens[results[x][y]] > 200)
 				setTile(l, x, y, ACID);
 }
 

@@ -14,7 +14,7 @@
 bool Acid::update(float dt) {
 	Entity::update(dt);
 	if (collided) {
-		if (world->getTile(1, dgrid::util::floor(x), dgrid::util::floor(y)) == GRASS)
+		if (world->getTile(1, dgrid::util::floor(x), dgrid::util::floor(y)) != ACID)
 		world->setTile(1, dgrid::util::floor(x), dgrid::util::floor(y), EMPTY);
 //		world->setTile(util::floor(x+1), util::floor(y), EMPTY);
 //		world->setTile(util::floor(x-1), util::floor(y), EMPTY);
