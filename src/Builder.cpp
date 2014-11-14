@@ -17,7 +17,7 @@ bool Builder::update(float dt) {
 	sx += 40*dt;
 	
 	int mx = dgrid::util::floor(x), my = dgrid::util::floor(y);
-	world->setTile(1, mx - 1 - random()%10, my - 10 + random()%20, WALL);
+	world->setTile(1, mx - 1 - random()%5, my - 2 + random()%4, WALL);
 	
 	Entity::update(dt);
 	return false;
