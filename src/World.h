@@ -40,7 +40,6 @@ namespace dgrid {
 		tileID getTile(int l, int x, int y);
 		void setTile(int l, int x, int y, tileID tile);
 		
-		void spawnParticle(int x, int y);
 		void spawnEntity(Entity* e);
 		
 		int camX() const {return util::floor(player->x);}

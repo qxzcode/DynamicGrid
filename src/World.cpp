@@ -170,15 +170,6 @@ void World::setTile(int l, int x, int y, tileID tile) {
 	}
 }
 
-#include "Acid.h"
-#include <stdlib.h>
-
-void World::spawnParticle(int x, int y) {
-#define rand ((random()/2147483647.0*2.0)-1.0)
-	spawnEntity(new Acid(this, double(x), double(y), rand*1000, rand*1000));
-#undef rand
-}
-
 void World::spawnEntity(Entity *e) {
 	entities.emplace_front(e);
 }

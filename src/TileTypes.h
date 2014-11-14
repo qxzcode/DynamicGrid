@@ -11,7 +11,7 @@
 #include "TileSet.h"
 
 enum {
-	EMPTY=0, DIRT, GRASS, STONE, ACID,
+	EMPTY=0, DIRT, GRASS, STONE, WALL, ACID,
 };
 
 void initTiles(dgrid::TileSet& tiles);
