@@ -33,19 +33,40 @@ bool Entity::update(float dt) {
 }
 
 void Entity::draw() {
-	int x = util::floor(this->x), y = util::floor(this->y);
 	if (drawn) {
-		world->setTile(2, lastDrawX, lastDrawY, 0);
+		clearSprite(lastDrawX, lastDrawY);
 	}
-	world->setTile(2, x, y, curSprite->tile(0, 0));
-	lastDrawX = x;
-	lastDrawY = y;
+	int mx = util::floor(x), my = util::floor(y);
+	drawSprite(mx, my);
+	
+	lastDrawX = mx;
+	lastDrawY = my;
 	drawn = true;
+}
+
+void Entity::drawSprite(int mx, int my) {
+	for (int lx = 0; lx < curSprite->w; lx++) {
+		int wx = mx+lx;
+		for (int ly = 0; ly < curSprite->h; ly++) {
+			int wy = my+ly;
+			world->setTile(2, wx, wy, curSprite->tile(lx, ly));
+		}
+	}
+}
+
+void Entity::clearSprite(int mx, int my) {
+	for (int lx = 0; lx < curSprite->w; lx++) {
+		int wx = mx+lx;
+		for (int ly = 0; ly < curSprite->h; ly++) {
+			int wy = my+ly;
+			world->setTile(2, wx, wy, 0);
+		}
+	}
 }
 
 void Entity::onRemove() {
 	if (drawn) {
-		world->setTile(2, lastDrawX, lastDrawY, 0);
+		clearSprite(lastDrawX, lastDrawY);
 	}
 }
 

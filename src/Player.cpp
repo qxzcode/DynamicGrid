@@ -33,4 +33,4 @@ bool Player::update(float dt) {
 	return false;
 }
 
-dgrid::Entity::Sprite Player::sprite(1, 1);
+dgrid::Entity::Sprite Player::sprite(3, 3);

@@ -20,6 +20,8 @@ namespace dgrid {
 		
 		virtual bool update(float dt);
 		void draw();
+		void drawSprite(int x, int y);
+		void clearSprite(int x, int y);
 		
 		virtual void onRemove();
 		
