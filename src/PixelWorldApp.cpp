@@ -19,10 +19,13 @@ void PixelWorldApp::prepareSettings(Settings* settings) {
 	settings->setWindowSize(1000, 800);
 }
 
+#include "Builder.h"
+
 void PixelWorldApp::setup() {
 	getWindow()->setTitle("Pixel World");
 	world.init();
 	initTiles(world.tileTypes);
+	world.spawnEntity(new Builder(&world, 10, 10));
 	getDelta();
 }
 
