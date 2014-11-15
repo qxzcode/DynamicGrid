@@ -8,12 +8,12 @@
 
 #pragma once
 
-#include "Entity.h"
+#include "Unit.h"
 
-class Builder : public dgrid::Entity {
+class Builder : public Unit {
 public:
 	static Sprite sprite;
-	Builder(dgrid::World* w, double x, double y):Entity(w, &Builder::sprite, x, y) {hasGravity = false;}
+	Builder(dgrid::World* w, double x, double y):Unit(w, &Builder::sprite, x, y, 10) {}
 	
 	bool update(float dt);
 };

@@ -19,8 +19,7 @@ bool Builder::update(float dt) {
 	int mx = dgrid::util::floor(x), my = dgrid::util::floor(y);
 	world->setTile(1, mx - 1 - random()%5, my - 2 + random()%4, WALL);
 	
-	Entity::update(dt);
-	return false;
+	return Unit::update(dt);
 }
 
 dgrid::Entity::Sprite Builder::sprite(1, 1);
