@@ -20,12 +20,15 @@ void PixelWorldApp::prepareSettings(Settings* settings) {
 }
 
 #include "Builder.h"
+#include <stdlib.h>
 
 void PixelWorldApp::setup() {
 	getWindow()->setTitle("Pixel World");
 	world.init();
 	initTiles(world.tileTypes);
-	world.spawnEntity(new Builder(&world, 10, 10));
+	for (int n = 0; n < 10; n++) {
+		world.spawnEntity(new Builder(&world, random()%100, random()%100));
+	}
 	getDelta();
 }
 
