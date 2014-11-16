@@ -11,6 +11,10 @@
 #include "input.h"
 #include "TileTypes.h"
 
+#ifdef DEBUG
+	#warning Debug is on
+#endif
+
 PixelWorldApp::PixelWorldApp():generator(time(NULL)),world(&generator) {
 	
 }
@@ -20,6 +24,7 @@ void PixelWorldApp::prepareSettings(Settings* settings) {
 }
 
 #include "Builder.h"
+#include "Tank.h"
 #include <stdlib.h>
 
 void PixelWorldApp::setup() {
@@ -28,6 +33,9 @@ void PixelWorldApp::setup() {
 	initTiles(world.tileTypes);
 	for (int n = 0; n < 10; n++) {
 		world.spawnEntity(new Builder(&world, random()%100, random()%100));
+	}
+	for (int n = 0; n < 10; n++) {
+		world.spawnEntity(new Tank(&world, random()%100, random()%100));
 	}
 	getDelta();
 }

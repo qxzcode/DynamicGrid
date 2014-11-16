@@ -23,7 +23,8 @@ bool Entity::update(float dt) {
 	x += sx*dt;
 	y += sy*dt;
 	
-	double f = 1 + (2.0*dt);
+	// friction
+	double f = 1 + (friction*dt);
 	sx /= f;
 	sy /= f;
 	

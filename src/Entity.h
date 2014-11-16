@@ -50,6 +50,7 @@ namespace dgrid {
 		bool isColliding(double x, double y, int* cx = NULL, int* cy = NULL);
 		bool onGround = false, collided = false;
 		bool stopOnCollide = false, hasGravity = true;
+		double friction = 2.0;
 		
 		double lastX, lastY;
 		int lastDrawX, lastDrawY;
