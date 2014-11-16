@@ -71,7 +71,8 @@ void Chunk::draw(World *world) {
 				Color tileColor;
 				for (int l = 0; l < NUM_LAYERS; l++) {
 					tileID t = layers[l][x][y];
-					Color color = world->tileTypes[t].getColor(world->noise.tileColors.get(cwx+x, cwy+y)%100);
+					TileType tt = world->tileTypes[t];
+					Color color = tt.colorChance==0? tt.color1 : tt.getColor(world->noise.tileColors.get(cwx+x, cwy+y)%100);
 					tileColor = Color::blend(tileColor, color);
 				}
 				data[i++] = tileColor.r;
